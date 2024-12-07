@@ -16,4 +16,3 @@ brew install fd
 
 # Language tooling
 brew install pyenv
-

@@ -73,7 +73,7 @@ ZSH_THEME="robbyrussell"
 plugins=(
   git
   vi-mode
-  zsh-autosuggestions  
+  zsh-autosuggestions
   zsh-syntax-highlighting
 )
 
@@ -113,3 +113,5 @@ bindkey -v
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+
+. "$HOME/.local/bin/env"
