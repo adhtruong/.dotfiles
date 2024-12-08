@@ -8,3 +8,5 @@
 	path = ~/.gitconfig_local
 [pager]
 	branch = false
+[core]
+	editor = vim
