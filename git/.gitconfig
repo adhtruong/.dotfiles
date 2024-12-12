@@ -10,3 +10,5 @@
 	branch = false
 [core]
 	editor = vim
+[init]
+	defaultBranch = main

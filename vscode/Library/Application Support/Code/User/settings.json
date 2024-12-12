@@ -1,0 +1,73 @@
+{
+  "editor.formatOnSave": true,
+  "workbench.activityBar.location": "top",
+
+  "terminal.integrated.minimumContrastRatio": 1,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  "git.ignoreWindowsGit27Warning": true,
+  "go.toolsManagement.autoUpdate": true,
+  "workbench.editorAssociations": {
+    "*.ipynb": "jupyter-notebook"
+  },
+
+  "redhat.telemetry.enabled": false,
+  "notebook.cellToolbarLocation": {
+    "default": "right",
+    "jupyter-notebook": "left"
+  },
+  "explorer.decorations.badges": true,
+  "explorer.decorations.colors": true,
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.formatOnType": true,
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "editor.stickyScroll.enabled": true,
+  "python.analysis.autoImportCompletions": true,
+  "go.useLanguageServer": true,
+  "gopls": {
+    "formatting.gofumpt": true
+  },
+
+  "python.testing.pytestEnabled": true,
+  "[glsl]": {
+    "editor.defaultFormatter": "nolanderc.glsl-analyzer"
+  },
+
+  "vim.handleKeys": {
+    "<C-p>": false,
+    "<C-j>": false,
+    "<C-w-j>": false,
+    "<C-shift-k>": false,
+    "<C-shift-tab>": false,
+    "<C-tab>": false
+  },
+  "keyboard.dispatch": "keyCode",
+  "editor.lineNumbers": "relative"
+}
