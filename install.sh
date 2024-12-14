@@ -14,5 +14,8 @@ brew install git-lfs
 brew install tree
 brew install fd
 
+brew install zoxide
+brew install fzf
+
 # Language tooling
 brew install pyenv

@@ -73,6 +73,7 @@ ZSH_THEME="robbyrussell"
 plugins=(
   git
   vi-mode
+  fzf-tab
   zsh-autosuggestions
   zsh-syntax-highlighting
 )
@@ -117,3 +118,13 @@ eval "$(pyenv init -)"
 . "$HOME/.local/bin/env"
 
 alias vim=nvim
+
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
+
+source ~/fzf-git.sh
+autoload -U compinit; compinit
+
+eval "$(zoxide init zsh --cmd cd)"
+
+[[ -r $HOME/.zshrc.local ]] && source $HOME/.zshrc.local
