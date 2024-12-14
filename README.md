@@ -1,5 +1,10 @@
 # .dotfiles
 
+Repo for managing configuration.
+
 ## Set up
 
-- `brew install stow`
+- Install `brew`
+- `make install bundle`
+- `bash install.sh`
+- `make all`
