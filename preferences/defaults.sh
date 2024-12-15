@@ -6,6 +6,7 @@ outdir=$(dirname "$0")
 domains=(
   "com.knollsoft.Rectangle"
   "com.lwouis.alt-tab-macos"
+  "com.microsoft.VSCode"
 )
 
 # macOS Defaults Import/Export Script
