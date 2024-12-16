@@ -21,6 +21,16 @@
     "when": "vim.mode != 'Insert'"
   },
   {
+    "key": "shift+l",
+    "command": "workbench.action.nextEditor",
+    "when": "editorFocus"
+  },
+  {
+    "key": "shift+h",
+    "command": "workbench.action.previousEditor",
+    "when": "editorFocus"
+  },
+  {
     "key": "cmd+r",
     "command": "testing.runCurrentFile",
     "when": "editorTextFocus"
