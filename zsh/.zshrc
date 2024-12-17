@@ -128,3 +128,5 @@ autoload -U compinit; compinit
 eval "$(zoxide init zsh --cmd cd)"
 
 [[ -r $HOME/.zshrc.local ]] && source $HOME/.zshrc.local
+eval "$(uv generate-shell-completion zsh)"
+eval "$(uvx --generate-shell-completion zsh)"
