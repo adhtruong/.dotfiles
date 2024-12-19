@@ -63,5 +63,9 @@
     "command": "deleteFile",
     "key": "d",
     "when": "filesExplorerFocus && !inputFocus"
+  },
+  {
+    "key": "ctrl+/",
+    "command": "periscope.search"
   }
 ]

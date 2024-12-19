@@ -69,5 +69,7 @@
     "<C-tab>": false
   },
   "keyboard.dispatch": "keyCode",
-  "editor.lineNumbers": "relative"
+  "editor.lineNumbers": "relative",
+
+  "periscope.rgOptions": ["--hidden"]
 }
