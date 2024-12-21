@@ -4,6 +4,55 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Hover over left or right window",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "h",
+                                    "modifiers": { "mandatory": ["left_option"] }
+                                },
+                                "to": [
+                                    {
+                                        "software_function": {
+                                            "set_mouse_cursor_position": {
+                                                "screen": 0,
+                                                "x": "6%",
+                                                "y": "5%"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "pointing_button": "button1",
+                                        "repeat": false
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": {
+                                    "key_code": "l",
+                                    "modifiers": { "mandatory": ["left_option"] }
+                                },
+                                "to": [
+                                    {
+                                        "software_function": {
+                                            "set_mouse_cursor_position": {
+                                                "screen": 0,
+                                                "x": "56%",
+                                                "y": "5%"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "pointing_button": "button1",
+                                        "repeat": false
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "Tap Caps Lock for ESC or Hold for Control",
                         "manipulators": [
                             {

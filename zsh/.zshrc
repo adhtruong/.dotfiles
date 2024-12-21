@@ -78,7 +78,7 @@ plugins=(
   zsh-syntax-highlighting
 )
 
-source $ZSH/oh-my-zsh.sh
+source "$ZSH"/oh-my-zsh.sh
 
 # User configuration
 
@@ -111,22 +111,23 @@ source $ZSH/oh-my-zsh.sh
 
 bindkey -v
 
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-
-. "$HOME/.local/bin/env"
+[[ -f "$HOME/.local/bin/env" ]] && source "$HOME/.local/bin/env"
 
 alias vim=nvim
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
-source ~/fzf-git.sh
+source $HOME/fzf-git.sh
 autoload -U compinit; compinit
 
 eval "$(zoxide init zsh --cmd cd)"
 
-[[ -r $HOME/.zshrc.local ]] && source $HOME/.zshrc.local
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
 eval "$(uv generate-shell-completion zsh)"
 eval "$(uvx --generate-shell-completion zsh)"
+
+[[ -r $HOME/.zshrc.local ]] && source "$HOME"/.zshrc.local

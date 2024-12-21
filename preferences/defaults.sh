@@ -38,9 +38,7 @@ export_defaults() {
   fi
 
   # Export defaults to the domain-named file
-  defaults export "$domain" "$output_file"
-
-  if [ $? -eq 0 ]; then
+  if defaults export "$domain" "$output_file"; then
     echo "Successfully exported defaults for $domain to $output_file"
   else
     echo "Failed to export defaults for $domain"
@@ -69,9 +67,7 @@ import_defaults() {
   domain=$(basename "$input_file" .plist)
 
   # Import defaults from the specified file
-  defaults import "$domain" "$input_file"
-
-  if [ $? -eq 0 ]; then
+  if defaults import "$domain" "$input_file"; then
     echo "Successfully imported defaults for $domain from $input_file"
     echo "Note: Some changes may require logging out or restarting the application"
   else
@@ -87,15 +83,15 @@ fi
 
 case "$1" in
 import)
-  for domain in ${domains[@]}; do
+  for domain in "${domains[@]}"; do
     echo "Processing $domain"
-    import_defaults $domain
+    import_defaults "$domain"
   done
   ;;
 export)
-  for domain in ${domains[@]}; do
+  for domain in "${domains[@]}"; do
     echo "Processing $domain"
-    export_defaults $domain
+    export_defaults "$domain"
   done
   ;;
 *)
