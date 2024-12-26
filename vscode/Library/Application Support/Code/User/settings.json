@@ -43,7 +43,7 @@
   },
   "[python]": {
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
+      "source.organizeImports": "always"
     },
     "editor.formatOnType": true,
     "editor.defaultFormatter": "charliermarsh.ruff"
@@ -56,13 +56,13 @@
   },
 
   "python.testing.pytestEnabled": true,
+  "python.terminal.activateEnvironment": true,
   "[glsl]": {
     "editor.defaultFormatter": "nolanderc.glsl-analyzer"
   },
 
   "vim.handleKeys": {
     "<C-p>": false,
-    "<C-j>": false,
     "<C-w-j>": false,
     "<C-shift-k>": false,
     "<C-shift-tab>": false,
@@ -71,5 +71,7 @@
   "keyboard.dispatch": "keyCode",
   "editor.lineNumbers": "relative",
 
-  "periscope.rgOptions": ["--hidden"]
+  "periscope.rgOptions": ["--hidden", "--smart-case", "--ignore-vcs"],
+  "periscope.rgGlobExcludes": ["**/.git/**"],
+  "editor.accessibilitySupport": "off"
 }

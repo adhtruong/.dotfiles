@@ -20,6 +20,7 @@
     "command": "workbench.action.navigateDown",
     "when": "vim.mode != 'Insert'"
   },
+  // Tab switching
   {
     "key": "shift+l",
     "command": "workbench.action.nextEditor",
@@ -67,5 +68,9 @@
   {
     "key": "ctrl+/",
     "command": "periscope.search"
+  },
+  {
+    "key": "ctrl+\\",
+    "command": "workbench.action.terminal.toggleTerminal"
   }
 ]

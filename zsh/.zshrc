@@ -24,7 +24,7 @@ ZSH_THEME="robbyrussell"
 # HYPHEN_INSENSITIVE="true"
 
 # Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
+zstyle ':omz:update' mode disabled  # disable automatic updates
 # zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
@@ -117,17 +117,27 @@ alias vim=nvim
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
+export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --exclude ".git"'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 source $HOME/fzf-git.sh
-autoload -U compinit; compinit
 
 eval "$(zoxide init zsh --cmd cd)"
 
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+eval $(uv generate-shell-completion zsh)
+eval $(uvx --generate-shell-completion zsh)
 
-eval "$(uv generate-shell-completion zsh)"
-eval "$(uvx --generate-shell-completion zsh)"
+if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
+  local session_name
+  if [[ "$PWD" == "$HOME" ]]; then
+    session_name="default"
+  else
+    session_name=$(basename "$PWD")
+  fi
 
-[[ -r $HOME/.zshrc.local ]] && source "$HOME"/.zshrc.local
+  tmux new -A -s "$session_name" && exit
+fi
+
+if [[ -n $VIRTUAL_ENV && -e "${VIRTUAL_ENV}/bin/activate" ]]; then
+  source "${VIRTUAL_ENV}/bin/activate"
+fi
