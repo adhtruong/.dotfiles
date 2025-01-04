@@ -88,11 +88,11 @@ source "$ZSH"/oh-my-zsh.sh
 # export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='nvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+else
+  export EDITOR='nvim'
+fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
@@ -109,8 +109,6 @@ source "$ZSH"/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-bindkey -v
-
 [[ -f "$HOME/.local/bin/env" ]] && source "$HOME/.local/bin/env"
 
 alias vim=nvim
@@ -118,9 +116,11 @@ alias vim=nvim
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --exclude ".git"'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_COMMAND='fd --strip-cwd-prefix --hidden --exclude ".git"'
 
 source $HOME/fzf-git.sh
+bindkey -M vicmd '^gg' fzf-git-hash-widget
+bindkey -M vicmd '^g^g' fzf-git-hash-widget
 
 eval "$(zoxide init zsh --cmd cd)"
 
@@ -128,16 +128,23 @@ eval $(uv generate-shell-completion zsh)
 eval $(uvx --generate-shell-completion zsh)
 
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
-  local session_name
-  if [[ "$PWD" == "$HOME" ]]; then
-    session_name="default"
-  else
+  session_name="default"
+  if [[ "$PWD" != "$HOME" ]]; then
     session_name=$(basename "$PWD")
-  fi
 
+  fi
   tmux new -A -s "$session_name" && exit
 fi
 
-if [[ -n $VIRTUAL_ENV && -e "${VIRTUAL_ENV}/bin/activate" ]]; then
+if [[ -n $VIRTUAL_ENV && $PWD == $(dirname $VIRTUAL_ENV) && -e "${VIRTUAL_ENV}/bin/activate" ]]; then
   source "${VIRTUAL_ENV}/bin/activate"
 fi
+
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}

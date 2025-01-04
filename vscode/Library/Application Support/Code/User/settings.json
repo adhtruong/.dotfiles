@@ -1,8 +1,11 @@
 {
   "editor.formatOnSave": true,
+  "editor.stickyScroll.enabled": true,
   "workbench.activityBar.location": "top",
+  "editor.cursorSurroundingLines": 8,
 
   "terminal.integrated.minimumContrastRatio": 1,
+
   "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -48,19 +51,17 @@
     "editor.formatOnType": true,
     "editor.defaultFormatter": "charliermarsh.ruff"
   },
-  "editor.stickyScroll.enabled": true,
   "python.analysis.autoImportCompletions": true,
+
   "go.useLanguageServer": true,
   "gopls": {
     "formatting.gofumpt": true
   },
 
   "python.testing.pytestEnabled": true,
-  "python.terminal.activateEnvironment": true,
   "[glsl]": {
     "editor.defaultFormatter": "nolanderc.glsl-analyzer"
   },
-
   "vim.handleKeys": {
     "<C-p>": false,
     "<C-w-j>": false,
@@ -68,10 +69,50 @@
     "<C-shift-tab>": false,
     "<C-tab>": false
   },
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "before": [">"],
+      "commands": ["editor.action.indentLines"]
+    },
+    {
+      "before": ["<"],
+      "commands": ["editor.action.outdentLines"]
+    },
+    {
+      "before": ["p"],
+      "after": ["p", "g", "v", "y"]
+    }
+  ],
+  "vim.visualModeKeyBindings": [
+    {
+      "before": ["K"],
+      "commands": ["editor.action.moveLinesUpAction"]
+    },
+    {
+      "before": ["J"],
+      "commands": ["editor.action.moveLinesDownAction"]
+    }
+  ],
+  "vim.normalModeKeyBindings": [
+    {
+      "before": ["K"],
+      "commands": ["editor.action.moveLinesUpAction"]
+    },
+    {
+      "before": ["J"],
+      "commands": ["editor.action.moveLinesDownAction"]
+    }
+  ],
+  "vim.useSystemClipboard": true,
+  "vim.highlightedyank.enable": true,
+  "vim.showMarksInGutter": true,
   "keyboard.dispatch": "keyCode",
   "editor.lineNumbers": "relative",
 
   "periscope.rgOptions": ["--hidden", "--smart-case", "--ignore-vcs"],
   "periscope.rgGlobExcludes": ["**/.git/**"],
-  "editor.accessibilitySupport": "off"
+
+  "editor.accessibilitySupport": "off",
+  "editor.fontFamily": "MesloLGS NF, Menlo, 'Courier New', monospace",
+  "terminal.integrated.fontFamily": "MesloLGS NF"
 }
