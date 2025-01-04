@@ -119,8 +119,6 @@ export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --exclude ".
 export FZF_CTRL_T_COMMAND='fd --strip-cwd-prefix --hidden --exclude ".git"'
 
 source $HOME/fzf-git.sh
-bindkey -M vicmd '^gg' fzf-git-hash-widget
-bindkey -M vicmd '^g^g' fzf-git-hash-widget
 
 eval "$(zoxide init zsh --cmd cd)"
 
