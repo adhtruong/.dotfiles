@@ -114,5 +114,5 @@
 
   "editor.accessibilitySupport": "off",
   "editor.fontFamily": "MesloLGS NF, Menlo, 'Courier New', monospace",
-  "terminal.integrated.fontFamily": "MesloLGS NF"
+  "terminal.integrated.fontFamily": "monospace"
 }
