@@ -113,6 +113,6 @@
   "periscope.rgGlobExcludes": ["**/.git/**"],
 
   "editor.accessibilitySupport": "off",
-  "editor.fontFamily": "MesloLGS NF, Menlo, 'Courier New', monospace",
-  "terminal.integrated.fontFamily": "monospace"
+  "editor.fontFamily": "'MesloLGS Nerd Font', Menlo, 'Courier New', monospace",
+  "terminal.integrated.fontFamily": "MesloLGS Nerd Font"
 }
