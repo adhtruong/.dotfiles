@@ -94,6 +94,8 @@ else
   export EDITOR='nvim'
 fi
 
+unsetopt BEEP
+
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
 
@@ -115,8 +117,9 @@ alias vim=nvim
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
-export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --exclude ".git"'
+export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND='fd --strip-cwd-prefix --hidden --exclude ".git"'
+export FZF_DEFAULT_OPTS="--height=40% --tmux 70% --ansi --border --layout=reverse --border --margin=1 --padding=1"
 
 source $HOME/fzf-git.sh
 
@@ -129,7 +132,6 @@ if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
   session_name="default"
   if [[ "$PWD" != "$HOME" ]]; then
     session_name=$(basename "$PWD")
-
   fi
   tmux new -A -s "$session_name" && exit
 fi

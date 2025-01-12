@@ -7,6 +7,7 @@ domains=(
   "com.knollsoft.Rectangle"
   "com.lwouis.alt-tab-macos"
   "com.microsoft.VSCode"
+  "com.apple.screencapture"
 )
 
 # macOS Defaults Import/Export Script

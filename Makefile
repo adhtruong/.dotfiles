@@ -8,7 +8,7 @@ delete:
 
 .PHONY: brewfile
 brewfile:
-	brew bundle dump --force
+	brew bundle dump --force --no-upgrade
 
 .PHONY: install-bundle
 install-bundle:
