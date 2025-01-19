@@ -39,7 +39,7 @@ export_defaults() {
   fi
 
   # Export defaults to the domain-named file
-  if defaults export "$domain" "$output_file"; then
+  if defaults export "$domain" - >"$output_file"; then
     echo "Successfully exported defaults for $domain to $output_file"
   else
     echo "Failed to export defaults for $domain"
