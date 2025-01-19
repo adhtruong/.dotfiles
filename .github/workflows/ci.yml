@@ -1,10 +1,8 @@
-
 on:
   push:
 
 jobs:
   test_macos:
-
     runs-on: macos-latest
     timeout-minutes: 15
 
@@ -17,4 +15,5 @@ jobs:
           set -eo pipefail
           make install-bundle
           bash install.sh
+          make all
           bash preferences/default.sh import
