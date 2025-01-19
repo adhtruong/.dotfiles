@@ -1,0 +1,20 @@
+
+on:
+  push:
+
+jobs:
+  test_macos:
+
+    runs-on: macos-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install coreutils
+        run: |
+          set -eo pipefail
+          make install-bundle
+          bash install.sh
+          bash preferences/default.sh import
