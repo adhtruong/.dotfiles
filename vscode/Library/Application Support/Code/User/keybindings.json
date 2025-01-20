@@ -72,11 +72,11 @@
   },
   // Extensions
   {
-    "key": "ctrl+/",
+    "key": "ctrl+shift+f",
     "command": "periscope.search"
   },
   {
-    "key": "ctrl+\\",
+    "key": "ctrl+/",
     "command": "workbench.action.terminal.toggleTerminal"
   },
   {
