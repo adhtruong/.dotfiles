@@ -71,7 +71,7 @@ zstyle ':omz:update' mode disabled  # disable automatic updates
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git
+  gitfast
   vi-mode
   fzf-tab
   zsh-autosuggestions
@@ -114,6 +114,7 @@ unsetopt BEEP
 [[ -f "$HOME/.local/bin/env" ]] && source "$HOME/.local/bin/env"
 
 alias vim=nvim
+alias gitroot='cd $(git rev-parse --show-toplevel)'
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
@@ -136,7 +137,7 @@ _fzf_compgen_dir() {
   fd --type=d --hidden --exclude .git . "$1"
 }
 
-source $HOME/fzf-git.sh
+source $HOME/fzf-git.sh/fzf-git.sh
 
 eval "$(zoxide init zsh --cmd cd)"
 
