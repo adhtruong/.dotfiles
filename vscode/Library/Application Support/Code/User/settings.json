@@ -49,9 +49,9 @@
       "source.organizeImports": "always"
     },
     "editor.formatOnType": true,
-    "editor.defaultFormatter": "charliermarsh.ruff"
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "analysis.autoImportCompletions": true
   },
-  "python.analysis.autoImportCompletions": true,
 
   "go.useLanguageServer": true,
   "gopls": {
@@ -101,9 +101,25 @@
     {
       "before": ["J"],
       "commands": ["editor.action.moveLinesDownAction"]
+    },
+    {
+      "before": ["<C-g>", "p"], // Peek Git diff for the changed line
+      "commands": ["editor.action.dirtydiff.next"]
+    },
+    {
+      "before": ["<C-g>", "r"], // Revert hunk
+      "commands": ["git.revertSelectedRanges"]
+    },
+    {
+      "before": ["<C-g>", "j"], // Jump to next Git change
+      "commands": ["workbench.action.editor.nextChange"]
+    },
+    {
+      "before": ["<C-g>", "k"], // Jump to previous Git change
+      "commands": ["workbench.action.editor.previousChange"]
     }
   ],
-  "vim.useSystemClipboard": true,
+  "vim.useSystemClipboard": false,
   "vim.highlightedyank.enable": true,
   "vim.showMarksInGutter": true,
   "keyboard.dispatch": "keyCode",

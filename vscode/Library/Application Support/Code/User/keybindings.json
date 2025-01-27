@@ -22,12 +22,12 @@
   // Tab switching
   {
     "key": "shift+l",
-    "command": "workbench.action.nextEditor",
+    "command": "workbench.action.nextEditorInGroup",
     "when": "editorFocus && vim.mode != 'Insert'"
   },
   {
     "key": "shift+h",
-    "command": "workbench.action.previousEditor",
+    "command": "workbench.action.previousEditorInGroup",
     "when": "editorFocus && vim.mode != 'Insert'"
   },
   {
