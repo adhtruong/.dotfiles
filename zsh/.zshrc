@@ -116,6 +116,9 @@ unsetopt BEEP
 alias vim=nvim
 alias gitroot='cd $(git rev-parse --show-toplevel)'
 
+# Required for project level session set up
+alias code='env -u TMUX -u VIRTUAL_ENV code'
+
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
@@ -152,8 +155,9 @@ if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
   tmux new -A -s "$session_name" && exit
 fi
 
-if [[ -n $VIRTUAL_ENV && $PWD == $(dirname $VIRTUAL_ENV) && -e "${VIRTUAL_ENV}/bin/activate" ]]; then
-  source "${VIRTUAL_ENV}/bin/activate"
+TARGET_ENV=${VIRTUAL_ENV:-.venv}
+if [[ -e "${TARGET_ENV}/bin/activate" ]]; then
+  source "${TARGET_ENV}/bin/activate"
 fi
 
 function y() {

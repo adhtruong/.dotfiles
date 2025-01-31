@@ -131,5 +131,9 @@
   "editor.accessibilitySupport": "off",
   "editor.fontFamily": "'MesloLGS Nerd Font', Menlo, 'Courier New', monospace",
   "terminal.integrated.fontFamily": "'MesloLGS Nerd Font'",
-  "makefile.configureOnOpen": true
+
+  "terminal.integrated.shellIntegration.enabled": false,
+  "terminal.integrated.enablePersistentSessions": false,
+  "makefile.configureOnOpen": true,
+  "workbench.startupEditor": "none"
 }
