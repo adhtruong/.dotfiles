@@ -30,6 +30,7 @@
     "command": "workbench.action.previousEditorInGroup",
     "when": "editorFocus && vim.mode != 'Insert'"
   },
+  { "key": "shift+q", "command": "workbench.action.closeActiveEditor" },
   {
     "key": "cmd+r",
     "command": "testing.runCurrentFile",
@@ -83,5 +84,10 @@
     "key": "ctrl+.",
     "command": "editor.action.quickFix",
     "when": "editorHasCodeActionsProvider && editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "shift+;",
+    "command": "vim.showQuickpickCmdLine",
+    "when": "editorTextFocus && vim.mode != 'Insert'"
   }
 ]

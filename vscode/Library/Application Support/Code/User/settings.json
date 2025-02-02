@@ -91,6 +91,15 @@
     {
       "before": ["J"],
       "commands": ["editor.action.moveLinesDownAction"]
+    },
+    // Git
+    {
+      "before": ["ctrl+g", "r"], // Revert hunk
+      "commands": ["git.revertSelectedRanges"]
+    },
+    {
+      "before": ["ctrl+g", "g"], // Open file on remote
+      "commands": ["gitlens.openFileOnRemote"]
     }
   ],
   "vim.normalModeKeyBindings": [
@@ -102,13 +111,10 @@
       "before": ["J"],
       "commands": ["editor.action.moveLinesDownAction"]
     },
+    // Git
     {
       "before": ["<C-g>", "p"], // Peek Git diff for the changed line
       "commands": ["editor.action.dirtydiff.next"]
-    },
-    {
-      "before": ["<C-g>", "r"], // Revert hunk
-      "commands": ["git.revertSelectedRanges"]
     },
     {
       "before": ["<C-g>", "j"], // Jump to next Git change
@@ -117,6 +123,14 @@
     {
       "before": ["<C-g>", "k"], // Jump to previous Git change
       "commands": ["workbench.action.editor.previousChange"]
+    },
+    {
+      "before": ["<C-g>", "r"], // Revert hunk
+      "commands": ["git.revertSelectedRanges"]
+    },
+    {
+      "before": ["ctrl+g", "g"], // Open file on remote
+      "commands": ["gitlens.openFileOnRemote"]
     }
   ],
   "vim.useSystemClipboard": false,
