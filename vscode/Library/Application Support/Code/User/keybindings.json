@@ -23,12 +23,12 @@
   {
     "key": "shift+l",
     "command": "workbench.action.nextEditorInGroup",
-    "when": "editorFocus && vim.mode != 'Insert'"
+    "when": "editorTextFocus && vim.mode != 'Insert'"
   },
   {
     "key": "shift+h",
     "command": "workbench.action.previousEditorInGroup",
-    "when": "editorFocus && vim.mode != 'Insert'"
+    "when": "editorTextFocus && vim.mode != 'Insert'"
   },
   { "key": "shift+q", "command": "workbench.action.closeActiveEditor" },
   {

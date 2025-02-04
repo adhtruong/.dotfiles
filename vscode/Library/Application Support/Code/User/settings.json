@@ -94,11 +94,11 @@
     },
     // Git
     {
-      "before": ["ctrl+g", "r"], // Revert hunk
+      "before": ["<C-g>", "r"], // Revert hunk
       "commands": ["git.revertSelectedRanges"]
     },
     {
-      "before": ["ctrl+g", "g"], // Open file on remote
+      "before": ["<C-g>", "x"], // Open file on remote
       "commands": ["gitlens.openFileOnRemote"]
     }
   ],
@@ -129,7 +129,7 @@
       "commands": ["git.revertSelectedRanges"]
     },
     {
-      "before": ["ctrl+g", "g"], // Open file on remote
+      "before": ["<C-g>", "x"], // Open file on remote
       "commands": ["gitlens.openFileOnRemote"]
     }
   ],
