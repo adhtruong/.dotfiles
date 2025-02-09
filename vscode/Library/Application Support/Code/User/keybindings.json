@@ -19,6 +19,16 @@
     "command": "workbench.action.navigateDown",
     "when": "vim.mode != 'Insert'"
   },
+  {
+    "key": "ctrl+h",
+    "command": "workbench.action.previousPanelView",
+    "when": "panelFocus"
+  },
+  {
+    "key": "ctrl+l",
+    "command": "workbench.action.nextPanelView",
+    "when": "panelFocus"
+  },
   // Tab switching
   {
     "key": "shift+l",
@@ -35,6 +45,7 @@
     "command": "workbench.action.closeActiveEditor",
     "when": "editorTextFocus && vim.mode != 'Insert'"
   },
+  // Run commands
   {
     "key": "cmd+r",
     "command": "testing.runCurrentFile",
@@ -75,10 +86,21 @@
     "key": "enter",
     "when": "filesExplorerFocus && !inputFocus"
   },
+  // Improved search navigation
+  {
+    "key": "ctrl+p",
+    "command": "search.action.focusSearchFromResults",
+    "when": "accessibilityModeEnabled && searchViewletVisible || firstMatchFocus && searchViewletVisible"
+  },
+  {
+    "key": "ctrl+n",
+    "command": "search.focus.nextInputBox",
+    "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible"
+  },
   // Extensions
   {
     "key": "ctrl+shift+f",
-    "command": "periscope.search"
+    "command": "workbench.action.findInFiles"
   },
   {
     "key": "ctrl+/",
@@ -93,5 +115,31 @@
     "key": "shift+;",
     "command": "vim.showQuickpickCmdLine",
     "when": "editorTextFocus && vim.mode != 'Insert'"
+  },
+  // Git
+  {
+    "key": "ctrl+g p", // Open diff preview
+    "command": "git.openChange",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+g r", // Revert hunk
+    "command": "git.revertSelectedRanges",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+g x", // Open file on remote
+    "command": "gitlens.openFileOnRemote",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+g j", // Jump to next diff
+    "command": "workbench.action.editor.nextChange",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+g k", // Jump to prev diff
+    "command": "workbench.action.editor.previousChange",
+    "when": "editorFocus"
   }
 ]
