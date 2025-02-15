@@ -141,5 +141,15 @@
     "key": "ctrl+g k", // Jump to prev diff
     "command": "workbench.action.editor.previousChange",
     "when": "editorFocus"
+  },
+  {
+    "key": "/",
+    "command": "list.find",
+    "when": "listFocus && listSupportsFind"
+  },
+  {
+    "key": "alt+cmd+f",
+    "command": "-list.find",
+    "when": "listFocus && listSupportsFind"
   }
 ]
