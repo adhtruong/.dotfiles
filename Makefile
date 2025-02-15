@@ -1,7 +1,7 @@
 .PHONY: all
 all:
-	stow --verbose --target=$$HOME -R */
-	stow --verbose --target=$$HOME -R karabiner
+	stow --verbose --target=$$HOME -R --ignore=karabiner */
+	stow --verbose --target=$$HOME -R --adopt karabiner
 
 .PHONY: delete
 delete:
