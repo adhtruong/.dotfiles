@@ -11,3 +11,7 @@ repos:
         args: ["--allow-missing-credentials"]
       - id: detect-private-key
       - id: check-merge-conflict
+  - repo: https://github.com/crate-ci/typos
+    rev: typos-dict-v0.12.5
+    hooks:
+      - id: typos
