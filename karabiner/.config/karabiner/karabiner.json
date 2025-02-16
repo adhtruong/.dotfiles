@@ -4,6 +4,28 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Ctrl+f key -> hyper key without shift (⌘⌥⌃)",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "f",
+                                    "modifiers": {
+                                        "mandatory": ["left_control"],
+                                        "optional": ["any"]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_command",
+                                        "lazy": true,
+                                        "modifiers": ["left_option", "left_control"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "Remap Cmd+T to send 't' key for Vimium instead of opening a new tab",
                         "manipulators": [
                             {
@@ -114,7 +136,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.google\\.Chrome",
-                                            "^com\\.tinyspec\\.slackmacgap"
+                                            "^com\\.tinyspeck\\.slackmacgap"
                                         ],
                                         "type": "frontmost_application_if"
                                     }
@@ -134,7 +156,7 @@
                                     {
                                         "bundle_identifiers": [
                                             "^com\\.google\\.Chrome",
-                                            "^com\\.tinyspec\\.slackmacgap"
+                                            "^com\\.tinyspeck\\.slackmacgap"
                                         ],
                                         "type": "frontmost_application_if"
                                     }
