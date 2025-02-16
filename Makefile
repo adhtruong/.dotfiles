@@ -1,5 +1,7 @@
 .PHONY: all
-all:
+all: install-bundle link
+
+link:
 	stow --verbose --target=$$HOME -R --ignore=karabiner */
 	stow --verbose --target=$$HOME -R --adopt karabiner
 
