@@ -17,7 +17,7 @@
 		<key>keyCode</key>
 		<integer>38</integer>
 		<key>modifierFlags</key>
-		<integer>786432</integer>
+		<integer>1835008</integer>
 	</dict>
 	<key>bottomLeft</key>
 	<dict/>
@@ -36,14 +36,14 @@
 		<key>keyCode</key>
 		<integer>4</integer>
 		<key>modifierFlags</key>
-		<integer>786432</integer>
+		<integer>1835008</integer>
 	</dict>
 	<key>maximize</key>
 	<dict>
 		<key>keyCode</key>
 		<integer>36</integer>
 		<key>modifierFlags</key>
-		<integer>786432</integer>
+		<integer>1835008</integer>
 	</dict>
 	<key>portraitSnapAreas</key>
 	<string>null</string>
@@ -54,7 +54,7 @@
 		<key>keyCode</key>
 		<integer>37</integer>
 		<key>modifierFlags</key>
-		<integer>786432</integer>
+		<integer>1835008</integer>
 	</dict>
 	<key>subsequentExecutionMode</key>
 	<string>0</string>
@@ -71,7 +71,7 @@
 		<key>keyCode</key>
 		<integer>40</integer>
 		<key>modifierFlags</key>
-		<integer>786432</integer>
+		<integer>1835008</integer>
 	</dict>
 	<key>topLeft</key>
 	<dict/>

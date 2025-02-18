@@ -64,13 +64,17 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2025-02-11T08:46:52Z</date>
+	<date>2025-02-18T08:46:52Z</date>
 	<key>blacklist</key>
 	<string>[{"bundleIdentifier":"com.McAfee.McAfeeSafariHost","hide":"1","ignore":"0"},{"hide":"2","bundleIdentifier":"com.apple.finder","ignore":"0"},{"hide":"0","ignore":"2","bundleIdentifier":"com.microsoft.rdc.macos"},{"ignore":"2","hide":"0","bundleIdentifier":"com.teamviewer.TeamViewer"},{"bundleIdentifier":"org.virtualbox.app.VirtualBoxVM","hide":"0","ignore":"2"},{"hide":"0","ignore":"2","bundleIdentifier":"com.parallels."},{"ignore":"2","hide":"0","bundleIdentifier":"com.citrix.XenAppViewer"},{"ignore":"2","hide":"0","bundleIdentifier":"com.citrix.receiver.icaviewer.mac"},{"bundleIdentifier":"com.nicesoftware.dcvviewer","hide":"0","ignore":"2"},{"hide":"0","ignore":"2","bundleIdentifier":"com.vmware.fusion"},{"hide":"0","ignore":"2","bundleIdentifier":"com.apple.ScreenSharing"},{"bundleIdentifier":"com.utmapp.UTM","hide":"0","ignore":"2"}]</string>
 	<key>holdShortcut</key>
 	<string>⌘</string>
 	<key>holdShortcut2</key>
 	<string>⌘</string>
+	<key>holdShortcut3</key>
+	<string>⌃⌥⇧⌘</string>
+	<key>nextWindowShortcut3</key>
+	<string>N</string>
 	<key>preferencesVersion</key>
 	<string>7.19.1</string>
 	<key>updatePolicy</key>
