@@ -65,10 +65,7 @@
                                 ],
                                 "from": {
                                     "key_code": "t",
-                                    "modifiers": {
-                                        "mandatory": ["command"],
-                                        "optional": ["any"]
-                                    }
+                                    "modifiers": { "mandatory": ["command"] }
                                 },
                                 "to": [
                                     { "key_code": "t" },

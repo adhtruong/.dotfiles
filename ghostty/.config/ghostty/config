@@ -4,3 +4,5 @@ theme = "Dark+"
 font-family = "MesloLGS NF"
 title = " "
 quit-after-last-window-closed = true
+confirm-close-surface = false
+resize-overlay = "never"
