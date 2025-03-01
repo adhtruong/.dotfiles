@@ -173,4 +173,28 @@
     "command": "editor.action.scrollRightHover",
     "when": "editorHoverFocused"
   },
+  {
+    "key": "ctrl+z",
+    "command": "workbench.action.toggleMaximizedPanel",
+    "when": "panelFocus"
+  },
+  {
+    "key": "ctrl+z",
+    "command": "workbench.action.toggleMaximizeEditorGroup",
+    "when": "editorFocus && editorPartMaximizedEditorGroup"
+  },
+  {
+    "key": "ctrl+z",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        {
+          "command": "workbench.action.toggleMaximizeEditorGroup"
+        },
+        { "command": "workbench.action.closePanel" },
+        { "command": "workbench.action.closeSidebar" }
+      ]
+    },
+    "when": "editorFocus && !editorPartMaximizedEditorGroup"
+  }
 ]
