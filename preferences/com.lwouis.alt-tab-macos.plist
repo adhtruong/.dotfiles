@@ -6,6 +6,8 @@
 	<true/>
 	<key>MSAppCenter310CrashesUserDefaultsMigratedKey</key>
 	<true/>
+	<key>MSAppCenterAppDidReceiveMemoryWarning</key>
+	<true/>
 	<key>MSAppCenterInstallId</key>
 	<string>95DF01FB-DD39-445D-B7EC-334311975BF4</string>
 	<key>MSAppCenterNetworkRequestsAllowed</key>
@@ -15,7 +17,7 @@
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
 	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGvEBULDBIYHCJQUVJTVFVWV1hZ
 	WltcYWZVJG51bGzSDQ4PEVpOUy5vYmplY3RzViRjbGFzc6EQgAKAFNMTFA4VFhdcdGlt
-	ZXN0YW1wS2V5WWRldmljZUtleYADgAWAE9IZDhobV05TLnRpbWUjQcawYWsJCEaABNId
+	ZXN0YW1wS2V5WWRldmljZUtleYADgAWAE9IZDhobV05TLnRpbWUjQca1SS/preKABNId
 	Hh8gWiRjbGFzc25hbWVYJGNsYXNzZXNWTlNEYXRloh8hWE5TT2JqZWN03xAXIyQlJg4n
 	KCkqKywtLi8wMTIzNDU2Nzg5Ojs8PTs8PEFCPDw8PEdISUo8PE1OT1lvc1ZlcnNpb25e
 	dGltZVpvbmVPZmZzZXRYYXBwQnVpbGRfEBVsaXZlVXBkYXRlUGFja2FnZUhhc2haYXBw
@@ -25,7 +27,7 @@
 	VW1vZGVsXxAVd3JhcHBlclJ1bnRpbWVWZXJzaW9uXxAWbGl2ZVVwZGF0ZVJlbGVhc2VM
 	YWJlbFpzY3JlZW5TaXplVm9zTmFtZVdvc0J1aWxkgAuADoAQgACAEoAQgACAAIAGgA2A
 	AIAAgACAAIAJgAeAEYAIgACAAIAPgAqADF8QD2FwcGNlbnRlci5tYWNvc1U0LjMuMF5N
-	YWNCb29rUHJvMTcsMVVBcHBsZVVtYWNPU1YxNS4zLjBVMjRENjBVZW5fR0IQAFgxNDQw
+	YWNCb29rUHJvMTcsMVVBcHBsZVVtYWNPU1YxNS4zLjFVMjRENzBVZW5fR0IQAFgxNDQw
 	eDkwMFY3LjE5LjFfEBhjb20ubHdvdWlzLmFsdC10YWItbWFjb3PSHR5dXlpNU0FDRGV2
 	aWNlo19gIVpNU0FDRGV2aWNlXk1TQUNXcmFwcGVyU2Rr0h0eYmNfEBVNU0FDRGV2aWNl
 	SGlzdG9yeUluZm+jZGUhXxAVTVNBQ0RldmljZUhpc3RvcnlJbmZvXxAPTVNBQ0hpc3Rv
@@ -41,7 +43,7 @@
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
 	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGnCwwSGBwiJ1UkbnVsbNINDg8R
 	Wk5TLm9iamVjdHNWJGNsYXNzoRCAAoAG0xMUDhUWF1x0aW1lc3RhbXBLZXlcc2Vzc2lv
-	bklkS2V5gAOAAIAF0hkOGhtXTlMudGltZSNBxrBhaweLaYAE0h0eHyBaJGNsYXNzbmFt
+	bklkS2V5gAOAAIAF0hkOGhtXTlMudGltZSNBxrVJL9vzv4AE0h0eHyBaJGNsYXNzbmFt
 	ZVgkY2xhc3Nlc1ZOU0RhdGWiHyFYTlNPYmplY3TSHR4jJF8QFk1TQUNTZXNzaW9uSGlz
 	dG9yeUluZm+jJSYhXxAWTVNBQ1Nlc3Npb25IaXN0b3J5SW5mb18QD01TQUNIaXN0b3J5
 	SW5mb9IdHigpXk5TTXV0YWJsZUFycmF5oygqIVdOU0FycmF5AAgAEQAaACQAKQAyADcA
@@ -54,17 +56,23 @@
 	YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMS
 	AAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGnCwwSGBwiJ1UkbnVsbNINDg8R
 	Wk5TLm9iamVjdHNWJGNsYXNzoRCAAoAG0xMUDhUWF1x0aW1lc3RhbXBLZXlZdXNlcklk
-	S2V5gAOAAIAF0hkOGhtXTlMudGltZSNBxrBhawecWoAE0h0eHyBaJGNsYXNzbmFtZVgk
+	S2V5gAOAAIAF0hkOGhtXTlMudGltZSNBxrVJL9/seIAE0h0eHyBaJGNsYXNzbmFtZVgk
 	Y2xhc3Nlc1ZOU0RhdGWiHyFYTlNPYmplY3TSHR4jJF8QFU1TQUNVc2VySWRIaXN0b3J5
 	SW5mb6MlJiFfEBVNU0FDVXNlcklkSGlzdG9yeUluZm9fEA9NU0FDSGlzdG9yeUluZm/S
 	HR4oKV5OU011dGFibGVBcnJheaMoKiFXTlNBcnJheQAIABEAGgAkACkAMgA3AEkATABR
 	AFMAWwBhAGYAcQB4AHoAfAB+AIUAkgCcAJ4AoACiAKcArwC4ALoAvwDKANMA2gDdAOYA
 	6wEDAQcBHwExATYBRQFJAAAAAAAAAgEAAAAAAAAAKwAAAAAAAAAAAAAAAAAAAVE=
 	</data>
+	<key>NSWindow Frame NSSpellCheckerSpellingPanel</key>
+	<string>328 301 431 261 0 0 1440 875 </string>
+	<key>NSWindow Frame NSSpellCheckerSubstitutionsPanel2</key>
+	<string>692 407 425 137 0 0 1440 875 </string>
+	<key>NSWindow Frame SUUpdateAlert</key>
+	<string>410 357 620 398 0 0 1440 875 </string>
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2025-02-18T08:46:52Z</date>
+	<date>2025-02-25T08:46:52Z</date>
 	<key>blacklist</key>
 	<string>[{"bundleIdentifier":"com.McAfee.McAfeeSafariHost","hide":"1","ignore":"0"},{"hide":"2","bundleIdentifier":"com.apple.finder","ignore":"0"},{"hide":"0","ignore":"2","bundleIdentifier":"com.microsoft.rdc.macos"},{"ignore":"2","hide":"0","bundleIdentifier":"com.teamviewer.TeamViewer"},{"bundleIdentifier":"org.virtualbox.app.VirtualBoxVM","hide":"0","ignore":"2"},{"hide":"0","ignore":"2","bundleIdentifier":"com.parallels."},{"ignore":"2","hide":"0","bundleIdentifier":"com.citrix.XenAppViewer"},{"ignore":"2","hide":"0","bundleIdentifier":"com.citrix.receiver.icaviewer.mac"},{"bundleIdentifier":"com.nicesoftware.dcvviewer","hide":"0","ignore":"2"},{"hide":"0","ignore":"2","bundleIdentifier":"com.vmware.fusion"},{"hide":"0","ignore":"2","bundleIdentifier":"com.apple.ScreenSharing"},{"bundleIdentifier":"com.utmapp.UTM","hide":"0","ignore":"2"}]</string>
 	<key>holdShortcut</key>
@@ -72,7 +80,7 @@
 	<key>holdShortcut2</key>
 	<string>⌘</string>
 	<key>holdShortcut3</key>
-	<string>⌃⌥⇧⌘</string>
+	<string>⌃⌥⌘</string>
 	<key>nextWindowShortcut3</key>
 	<string>N</string>
 	<key>preferencesVersion</key>

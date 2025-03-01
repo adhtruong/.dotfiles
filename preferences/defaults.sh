@@ -8,6 +8,7 @@ domains=(
   "com.lwouis.alt-tab-macos"
   "com.microsoft.VSCode"
   "com.apple.screencapture"
+  "com.apple.dock"
 )
 
 # macOS Defaults Import/Export Script
