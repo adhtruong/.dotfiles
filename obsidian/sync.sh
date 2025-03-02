@@ -1,51 +1,52 @@
 ##!/bin/usr/env sh
 
 vaults=(
-    ~/Google\ Drive/My\ Drive/Obsidian/Vault/Test
-    ~/Documents/Notes
+  ~/Google\ Drive/My\ Drive/Obsidian/Vault/Notes
+  ~/Documents/Notes
 )
 targets=(
-    '.obsidian.vimrc'
-    '.obsidian/hotkeys.json'
-    '.obsidian/core-plugins.json'
-    '.obsidian/community-plugins.json'
-    '.obsidian/templates.json'
-    'templates/Daily Note.md'
+  '.obsidian.vimrc'
+  '.obsidian/hotkeys.json'
+  '.obsidian/core-plugins.json'
+  '.obsidian/community-plugins.json'
+  '.obsidian/templates.json'
+  '.obsidian/plugins/obsidian-linter/data.json'
+  'templates/Daily Note.md'
 )
 
 outdir=$(dirname "$0")
 
 export_settings() {
-    vault=$1
-    echo "Processing $vault..."
+  vault=$1
+  echo "Processing $vault..."
 
-    if [ ! -d "$vault" ]; then
-        echo "$vault does not exists. Skipping export"
-        return
-    fi
+  if [ ! -d "$vault" ]; then
+    echo "$vault does not exists. Skipping export"
+    return
+  fi
 
-    for file in "${targets[@]}"; do
-        target="$outdir/$file"
-        echo $target
-        mkdir -p $(dirname "$target")
-        cp "$vault/$file" "$target"
-    done
+  for file in "${targets[@]}"; do
+    target="$outdir/$file"
+    echo $target
+    mkdir -p $(dirname "$target")
+    cp "$vault/$file" "$target"
+  done
 }
 
 import_settings() {
-    vault=$1
-    echo "Processing $vault..."
+  vault=$1
+  echo "Processing $vault..."
 
-    if [ ! -d "$vault" ]; then
-        echo "$vault does not exists. Skipping import"
-        return
-    fi
+  if [ ! -d "$vault" ]; then
+    echo "$vault does not exists. Skipping import"
+    return
+  fi
 
-    for file in "${targets[@]}"; do
-        source="$outdir/$file"
-        echo "Copying $source to $vault"
-        cp "$source" "$vault/$file"
-    done
+  for file in "${targets[@]}"; do
+    source="$outdir/$file"
+    echo "Copying $source to $vault"
+    cp "$source" "$vault/$file"
+  done
 }
 
 usage() {
@@ -55,22 +56,22 @@ usage() {
 }
 
 main() {
-    case "$1" in
-    import)
+  case "$1" in
+  import)
     for vault in "${vaults[@]}"; do
-        import_settings "$vault"
+      import_settings "$vault"
     done
     ;;
-    export)
+  export)
     for vault in "${vaults[@]}"; do
-        export_settings "$vault"
+      export_settings "$vault"
     done
     ;;
-    *)
+  *)
     echo "Unknown command"
     exit 1
     ;;
-    esac
+  esac
 }
 
 main $1
