@@ -1,0 +1,47 @@
+#!/usr/bin/osascript
+
+on run argv
+    if (count of argv) = 0 then
+        return 1
+    end if
+
+    set searchTerms to items of argv -- Get all search terms from arguments
+
+    tell application "Google Chrome"
+        try
+            set windowList to windows
+
+            -- Iterate through all provided search terms
+            repeat with searchTerm in searchTerms
+                repeat with w in windowList
+                    set tabList to tabs of w
+                    set tabIndex to 0
+
+                    repeat with t in tabList
+                        set tabIndex to tabIndex + 1
+                        set tabTitle to (title of t) as string
+                        set tabUrl to (URL of t) as string
+
+                        if searchTerm is in tabTitle or searchTerm is in tabUrl then
+                            -- Activate Chrome and bring window to front
+                            activate
+                            set visible of w to true
+
+                            -- Switch to the tab
+                            set active tab index of w to tabIndex
+
+                            return "Opening: " & tabTitle
+                        end if
+                    end repeat
+                end repeat
+            end repeat
+
+            -- If no match found for any term, open the first term as a URL
+            open location item 1 of searchTerms
+            activate
+            return "No matches found. Opening: " & item 1 of searchTerms
+        on error errMsg
+            return "Error: " & errMsg
+        end try
+    end tell
+end run
