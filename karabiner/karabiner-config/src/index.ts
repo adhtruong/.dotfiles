@@ -45,6 +45,7 @@ writeToProfile({ name: "Default profile" }, [
 
   layer("w", "Ctrl+w")
     .modifiers("left_control")
+    .configKey((v) => v.toIfAlone("w", "left_control"), false)
     .manipulators([
       rectangle("j", "bottom-half"),
       rectangle("k", "top-half"),

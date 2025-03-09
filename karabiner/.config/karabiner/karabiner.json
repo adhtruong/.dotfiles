@@ -300,6 +300,14 @@
                       "value": 0
                     }
                   }
+                ],
+                "to_if_alone": [
+                  {
+                    "key_code": "w",
+                    "modifiers": [
+                      "left_control"
+                    ]
+                  }
                 ]
               },
               {
