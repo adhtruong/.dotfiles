@@ -112,6 +112,7 @@ unsetopt BEEP
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 [[ -f "$HOME/.local/bin/env" ]] && source "$HOME/.local/bin/env"
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 alias vim=nvim
 alias gitroot='cd $(git rev-parse --show-toplevel)'
