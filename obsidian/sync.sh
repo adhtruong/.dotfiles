@@ -1,9 +1,5 @@
 ##!/bin/usr/env sh
 
-vaults=(
-  ~/Google\ Drive/My\ Drive/Obsidian/Vault/Notes
-  ~/Documents/Notes
-)
 targets=(
   '.obsidian.vimrc'
   '.obsidian/hotkeys.json'
@@ -11,6 +7,7 @@ targets=(
   '.obsidian/community-plugins.json'
   '.obsidian/templates.json'
   '.obsidian/plugins/obsidian-linter/data.json'
+  '.obsidian/plugins/templater-obsidian/data.json'
   'templates/Daily Note.md'
 )
 
@@ -56,16 +53,18 @@ usage() {
 }
 
 main() {
+  vault=$OBSIDIAN_VAULT
+  if [[ -z $vault ]]; then
+    echo "OBSIDIAN_VAULT not set"
+    exit 1
+  fi
+
   case "$1" in
   import)
-    for vault in "${vaults[@]}"; do
-      import_settings "$vault"
-    done
+    import_settings "$vault"
     ;;
   export)
-    for vault in "${vaults[@]}"; do
-      export_settings "$vault"
-    done
+    export_settings "$vault"
     ;;
   *)
     echo "Unknown command"

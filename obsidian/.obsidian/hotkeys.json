@@ -21,10 +21,22 @@
         "Mod"
       ],
       "key": "B"
+    },
+    {
+      "modifiers": [
+        "Ctrl"
+      ],
+      "key": "E"
     }
   ],
   "obsidian-excalidraw-plugin:insert-link": [],
   "editor:context-menu": [
+    {
+      "modifiers": [
+        "Ctrl"
+      ],
+      "key": "Enter"
+    },
     {
       "modifiers": [
         "Mod"
@@ -47,15 +59,6 @@
         "Shift"
       ],
       "key": "F"
-    }
-  ],
-  "insert-template": [
-    {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
-      "key": "T"
     }
   ],
   "command-palette:open": [
@@ -82,6 +85,23 @@
         "Shift"
       ],
       "key": "C"
+    }
+  ],
+  "quick-explorer:browse-current": [
+    {
+      "modifiers": [
+        "Ctrl"
+      ],
+      "key": "E"
+    }
+  ],
+  "templater-obsidian:insert-templater": [
+    {
+      "modifiers": [
+        "Mod",
+        "Shift"
+      ],
+      "key": "T"
     }
   ]
 }
