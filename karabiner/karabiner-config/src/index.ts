@@ -33,6 +33,23 @@ writeToProfile({ name: "Default profile" }, [
     map("l").toApp("Visual Studio Code"),
     map(";").toApp("Slack"),
 
+    map("o", null, "any").toAfterKeyUp([
+      {
+        key_code: "tab",
+        modifiers: ["right_command"],
+        hold_down_milliseconds: 20,
+      },
+      { key_code: "vk_none" },
+    ]),
+    map("i", null, "any").toAfterKeyUp([
+      {
+        key_code: "grave_accent_and_tilde",
+        modifiers: ["right_command"],
+        hold_down_milliseconds: 20,
+      },
+      { key_code: "vk_none" },
+    ]),
+
     createKeyToLinkMap("m", "https://open.spotify.com"),
     createKeyToLinkMap("n", "https://www.notion.so"),
     createKeyToLinkMap("y", "https://www.youtube.com"),
@@ -52,6 +69,7 @@ writeToProfile({ name: "Default profile" }, [
       rectangle("h", "left-half"),
       rectangle("l", "right-half"),
       rectangle("return_or_enter", "maximize"),
+      rectangle("o", "restore"),
     ]),
 
   rule(
@@ -75,5 +93,10 @@ writeToProfile({ name: "Default profile" }, [
       },
       { key_code: "delete_or_backspace" },
     ]),
+  ]),
+
+  rule("Disable hide and minimise").manipulators([
+    map("m", "command").toNone(),
+    map("h", "command").toNone(),
   ]),
 ]);
