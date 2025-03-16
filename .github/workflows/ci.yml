@@ -14,6 +14,6 @@ jobs:
         run: |
           set -eo pipefail
           make install-bundle
-          bash install.sh
           make all
+          bash install.sh
           bash preferences/default.sh import
