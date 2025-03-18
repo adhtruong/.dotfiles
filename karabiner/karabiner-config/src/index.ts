@@ -6,6 +6,7 @@ import {
   rule,
   writeToProfile,
 } from "karabiner.ts";
+import { createVimLayer } from "./vim-layer";
 
 function createKeyToLinkMap(
   key: FromKeyParam,
@@ -20,6 +21,8 @@ function rectangle(key: FromKeyParam, name: string) {
 }
 
 writeToProfile({ name: "Default profile" }, [
+  ...createVimLayer(),
+
   rule("Tap Caps Lock for ESC or Hold for Control").manipulators([
     map("caps_lock", null, "any")
       .to([{ key_code: "left_control", lazy: true }])

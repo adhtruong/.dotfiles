@@ -174,17 +174,17 @@
     "when": "editorHoverFocused"
   },
   {
-    "key": "ctrl+z",
+    "key": "ctrl+m",
     "command": "workbench.action.toggleMaximizedPanel",
     "when": "panelFocus"
   },
   {
-    "key": "ctrl+z",
+    "key": "ctrl+m",
     "command": "workbench.action.toggleMaximizeEditorGroup",
     "when": "editorFocus && editorPartMaximizedEditorGroup"
   },
   {
-    "key": "ctrl+z",
+    "key": "ctrl+m",
     "command": "runCommands",
     "args": {
       "commands": [
