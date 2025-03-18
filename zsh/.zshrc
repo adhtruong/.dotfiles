@@ -116,6 +116,7 @@ unsetopt BEEP
 
 alias vim=nvim
 alias gitroot='cd $(git rev-parse --show-toplevel)'
+alias tmuxroot='cd $(tmux display-message -p -F "#{session_path}")'
 
 # Required for project level session set up
 alias code='env -u TMUX -u VIRTUAL_ENV code'
@@ -141,7 +142,9 @@ _fzf_compgen_dir() {
   fd --type=d --hidden --exclude .git . "$1"
 }
 
-source $HOME/fzf-git.sh/fzf-git.sh
+# Note a plugin but store in to reuse scripts
+# https://github.com/junegunn/fzf-git.sh/pull/59/files
+source $ZSH_CUSTOM/plugins/fzf-git.sh/fzf-git.sh
 
 eval "$(zoxide init zsh --cmd cd)"
 

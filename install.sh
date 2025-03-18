@@ -11,6 +11,7 @@ plugins=(
     https://github.com/Aloxaf/fzf-tab
     https://github.com/zsh-users/zsh-autosuggestions
     https://github.com/zsh-users/zsh-syntax-highlighting
+    https://github.com/junegunn/fzf-git.sh
 )
 for plugin in "${plugins[@]}"; do
   echo "Installing $plugin"
