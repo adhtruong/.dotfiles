@@ -30,6 +30,9 @@ nmap <C-w>v :splitVertical<CR>
 exmap splitHorizontal obcommand workspace:split-horizontal
 nmap <C-w>s :splitHorizontal<CR>
 
+exmap closeSplit obcommand workspace:close-tab-group
+nmap <C-w>c :closeSplit<CR>
+
 " Smarter o and O (inserting prefix for markdown lists)
 exmap blankBelow obcommand obsidian-editor-shortcuts:insertLineBelow
 exmap blankAbove obcommand obsidian-editor-shortcuts:insertLineAbove
@@ -80,3 +83,4 @@ nmap zR :unfoldall<CR>
 
 exmap foldall obcommand editor:fold-all
 nmap zM :foldall<CR>
+

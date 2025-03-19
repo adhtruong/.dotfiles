@@ -33,17 +33,17 @@
   {
     "key": "shift+l",
     "command": "workbench.action.nextEditorInGroup",
-    "when": "editorTextFocus && vim.mode != 'Insert'"
+    "when": "editorTextFocus && vim.mode != 'Insert' && !(vim.command =~ /(f|F|t|T)$/)"
   },
   {
     "key": "shift+h",
     "command": "workbench.action.previousEditorInGroup",
-    "when": "editorTextFocus && vim.mode != 'Insert'"
+    "when": "editorTextFocus && vim.mode != 'Insert' && !(vim.command =~ /(f|F|t|T)$/)"
   },
   {
     "key": "shift+q",
     "command": "workbench.action.closeActiveEditor",
-    "when": "editorTextFocus && vim.mode != 'Insert'"
+    "when": "editorTextFocus && vim.mode != 'Insert' && !(vim.command =~ /(f|F|t|T)$/)"
   },
   // Run commands
   {
