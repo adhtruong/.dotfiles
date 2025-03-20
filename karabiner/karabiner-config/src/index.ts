@@ -61,6 +61,8 @@ writeToProfile({ name: "Default profile" }, [
       "https://www.google.com/search?q=stopwatch",
       "https://www.google.com/search?q=timer"
     ),
+
+    map("p").to$("open raycast://extensions/thomas/visual-studio-code/index"),
   ]),
 
   layer("w", "Ctrl+w")

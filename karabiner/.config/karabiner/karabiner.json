@@ -631,6 +631,24 @@
                     "value": 1
                   }
                 ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "p"
+                },
+                "to": [
+                  {
+                    "shell_command": "open raycast://extensions/thomas/visual-studio-code/index"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "layer-tab",
+                    "value": 1
+                  }
+                ]
               }
             ]
           },
