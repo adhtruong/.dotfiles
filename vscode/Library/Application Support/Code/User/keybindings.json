@@ -97,6 +97,16 @@
     "command": "search.focus.nextInputBox",
     "when": "inSearchEditor && inputBoxFocus || inputBoxFocus && searchViewletVisible"
   },
+  {
+    "key": "/",
+    "command": "list.find",
+    "when": "listFocus && listSupportsFind && !inputFocus"
+  },
+  {
+    "key": "alt+cmd+f",
+    "command": "-list.find",
+    "when": "listFocus && listSupportsFind"
+  },
   // Extensions
   {
     "key": "ctrl+shift+f",
@@ -107,7 +117,7 @@
     "command": "workbench.action.terminal.toggleTerminal"
   },
   {
-    "key": "ctrl+.",
+    "key": "ctrl+enter",
     "command": "editor.action.quickFix",
     "when": "editorHasCodeActionsProvider && editorTextFocus && !editorReadonly"
   },
@@ -142,16 +152,6 @@
     "command": "workbench.action.editor.previousChange",
     "when": "editorFocus"
   },
-  {
-    "key": "/",
-    "command": "list.find",
-    "when": "listFocus && listSupportsFind"
-  },
-  {
-    "key": "alt+cmd+f",
-    "command": "-list.find",
-    "when": "listFocus && listSupportsFind"
-  },
   // Peek navigation
   {
     "key": "h",
@@ -180,21 +180,13 @@
   },
   {
     "key": "ctrl+m",
-    "command": "workbench.action.toggleMaximizeEditorGroup",
-    "when": "editorFocus && editorPartMaximizedEditorGroup"
-  },
-  {
-    "key": "ctrl+m",
     "command": "runCommands",
     "args": {
       "commands": [
-        {
-          "command": "workbench.action.toggleMaximizeEditorGroup"
-        },
-        { "command": "workbench.action.closePanel" },
-        { "command": "workbench.action.closeSidebar" }
+        "workbench.action.toggleMaximizeEditorGroup",
+        "workbench.action.togglePanel"
       ]
     },
-    "when": "editorFocus && !editorPartMaximizedEditorGroup"
+    "when": "editorFocus"
   }
 ]

@@ -135,6 +135,43 @@
       "commands": ["editor.action.moveLinesDownAction"]
     }
   ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["]", "d"],
+      "commands": ["editor.action.marker.nextInFiles"],
+      "silent": true
+    },
+    {
+      "before": ["[", "d"],
+      "commands": ["editor.action.marker.prevInFiles"],
+      "silent": true
+    },
+    // Debugger bindings
+    {
+      "before": ["g", "b", "b"],
+      "commands": ["editor.debug.action.toggleBreakpoint"]
+    },
+    {
+      "before": ["g", "b", "B"],
+      "commands": ["editor.debug.action.conditionalBreakpoint"]
+    },
+    {
+      "before": ["g", "b", "c"],
+      "commands": ["workbench.action.debug.continue"]
+    },
+    {
+      "before": ["g", "b", "i"],
+      "commands": ["workbench.action.debug.stepInto"]
+    },
+    {
+      "before": ["g", "b", "o"],
+      "commands": ["workbench.action.debug.stepOver"]
+    },
+    {
+      "before": ["g", "b", "O"],
+      "commands": ["workbench.action.debug.stepOut"]
+    }
+  ],
   "vim.useSystemClipboard": false,
   "vim.highlightedyank.enable": true,
   "vim.showMarksInGutter": true,

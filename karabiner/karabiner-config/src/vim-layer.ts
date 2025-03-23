@@ -2,7 +2,7 @@ import { duoLayer, map } from "karabiner.ts";
 
 export function createVimLayer() {
   return [
-    duoLayer("f", ";")
+    duoLayer("f", ";", "vim-layer")
       .leaderMode({ sticky: true })
       .notification()
       .manipulators([

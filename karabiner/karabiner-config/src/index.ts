@@ -4,16 +4,17 @@ import {
   layer,
   map,
   rule,
+  to$,
   writeToProfile,
 } from "karabiner.ts";
 import { createVimLayer } from "./vim-layer";
 
-function createKeyToLinkMap(
-  key: FromKeyParam,
-  link: string,
-  alias: string = ""
-) {
-  return map(key).to$(`~/bin/find-or-open-tab ${link} ${alias}`);
+function toLink(link: string, alias: string = "") {
+  return to$(`~/bin/find-or-open-tab ${link} ${alias}`);
+}
+
+function mapToLink(key: FromKeyParam, link: string, alias: string = "") {
+  return map(key).to(toLink(link, alias));
 }
 
 function rectangle(key: FromKeyParam, name: string) {
@@ -36,7 +37,7 @@ writeToProfile({ name: "Default profile" }, [
     map("l").toApp("Visual Studio Code"),
     map(";").toApp("Slack"),
 
-    map("o", null, "any").toAfterKeyUp([
+    map("o").toAfterKeyUp([
       {
         key_code: "tab",
         modifiers: ["right_command"],
@@ -44,7 +45,7 @@ writeToProfile({ name: "Default profile" }, [
       },
       { key_code: "vk_none" },
     ]),
-    map("i", null, "any").toAfterKeyUp([
+    map("i").toAfterKeyUp([
       {
         key_code: "grave_accent_and_tilde",
         modifiers: ["right_command"],
@@ -53,10 +54,12 @@ writeToProfile({ name: "Default profile" }, [
       { key_code: "vk_none" },
     ]),
 
-    createKeyToLinkMap("m", "https://open.spotify.com"),
-    createKeyToLinkMap("n", "https://www.notion.so"),
-    createKeyToLinkMap("y", "https://www.youtube.com"),
-    createKeyToLinkMap(
+    mapToLink("g", "https://calendar.google.com"),
+    mapToLink("e", "https://mail.google.com/"),
+    mapToLink("m", "https://open.spotify.com"),
+    mapToLink("n", "https://www.notion.so"),
+    mapToLink("y", "https://www.youtube.com"),
+    mapToLink(
       "t",
       "https://www.google.com/search?q=stopwatch",
       "https://www.google.com/search?q=timer"

@@ -4,7 +4,7 @@
       "complex_modifications": {
         "rules": [
           {
-            "description": "DuoLayer f ;",
+            "description": "DuoLayer vim-layer",
             "manipulators": [
               {
                 "type": "basic",
@@ -32,21 +32,21 @@
                 "to": [
                   {
                     "set_variable": {
-                      "name": "duo-layer-f-;",
+                      "name": "vim-layer",
                       "value": 1
                     }
                   },
                   {
                     "set_notification_message": {
-                      "id": "duo-layer-duo-layer-f-;",
-                      "text": "DuoLayer f ;"
+                      "id": "duo-layer-vim-layer",
+                      "text": "DuoLayer vim-layer"
                     }
                   }
                 ],
                 "conditions": [
                   {
                     "type": "variable_unless",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -69,7 +69,7 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -92,7 +92,7 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -115,7 +115,7 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -138,7 +138,7 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -164,7 +164,7 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -190,7 +190,7 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -216,7 +216,7 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -242,7 +242,7 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -268,7 +268,7 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ]
@@ -281,20 +281,20 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ],
                 "to": [
                   {
                     "set_variable": {
-                      "name": "duo-layer-f-;",
+                      "name": "vim-layer",
                       "value": 0
                     }
                   },
                   {
                     "set_notification_message": {
-                      "id": "duo-layer-duo-layer-f-;",
+                      "id": "duo-layer-vim-layer",
                       "text": ""
                     }
                   }
@@ -308,20 +308,20 @@
                 "conditions": [
                   {
                     "type": "variable_if",
-                    "name": "duo-layer-f-;",
+                    "name": "vim-layer",
                     "value": 1
                   }
                 ],
                 "to": [
                   {
                     "set_variable": {
-                      "name": "duo-layer-f-;",
+                      "name": "vim-layer",
                       "value": 0
                     }
                   },
                   {
                     "set_notification_message": {
-                      "id": "duo-layer-duo-layer-f-;",
+                      "id": "duo-layer-vim-layer",
                       "text": ""
                     }
                   }
@@ -503,12 +503,7 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "o",
-                  "modifiers": {
-                    "optional": [
-                      "any"
-                    ]
-                  }
+                  "key_code": "o"
                 },
                 "to_after_key_up": [
                   {
@@ -533,12 +528,7 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "i",
-                  "modifiers": {
-                    "optional": [
-                      "any"
-                    ]
-                  }
+                  "key_code": "i"
                 },
                 "to_after_key_up": [
                   {
@@ -550,6 +540,42 @@
                   },
                   {
                     "key_code": "vk_none"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "layer-tab",
+                    "value": 1
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "g"
+                },
+                "to": [
+                  {
+                    "shell_command": "~/bin/find-or-open-tab https://calendar.google.com "
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "layer-tab",
+                    "value": 1
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "e"
+                },
+                "to": [
+                  {
+                    "shell_command": "~/bin/find-or-open-tab https://mail.google.com/ "
                   }
                 ],
                 "conditions": [
