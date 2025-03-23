@@ -72,6 +72,16 @@
     "when": "filesExplorerFocus && !inputFocus"
   },
   {
+    "key": "y",
+    "command": "filesExplorer.copy",
+    "when": "filesExplorerFocus && !inputFocus"
+  },
+  {
+    "key": "p",
+    "command": "filesExplorer.paste",
+    "when": "filesExplorerFocus && !inputFocus"
+  },
+  {
     "command": "renameFile",
     "key": "r",
     "when": "filesExplorerFocus && !inputFocus"
