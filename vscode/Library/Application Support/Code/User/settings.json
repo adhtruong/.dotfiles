@@ -188,5 +188,13 @@
   "terminal.integrated.shellIntegration.enabled": false,
   "terminal.integrated.enablePersistentSessions": false,
   "makefile.configureOnOpen": true,
-  "workbench.startupEditor": "none"
+  "workbench.startupEditor": "none",
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+
+  "shellformat.flag": "-i 0"
 }
