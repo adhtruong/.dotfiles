@@ -16,3 +16,7 @@ brewfile:
 .PHONY: install-bundle
 install-bundle:
 	brew bundle --no-upgrade
+
+.PHONY: lint
+lint:
+	pre-commit run -a

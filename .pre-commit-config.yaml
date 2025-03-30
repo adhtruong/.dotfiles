@@ -10,7 +10,7 @@ repos:
         args: ["--allow-missing-credentials"]
       - id: detect-private-key
       - id: check-merge-conflict
-  - repo: https://github.com/crate-ci/typos
+  - repo: https://github.com/adhtruong/mirrors-typos
     rev: v1.30.0
     hooks:
       - id: typos
