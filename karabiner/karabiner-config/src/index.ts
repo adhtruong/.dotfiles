@@ -1,11 +1,18 @@
 import {
   FromKeyParam,
+  hyperLayer,
   ifApp,
   layer,
   map,
   rule,
   to$,
+  BasicManipulator,
+  toHyper,
+  FromEvent,
   writeToProfile,
+  withMapper,
+  withModifier,
+  KeyCode,
 } from "karabiner.ts";
 import { createVimLayer } from "./vim-layer";
 
@@ -66,12 +73,13 @@ writeToProfile({ name: "Default profile" }, [
     ),
 
     map("p").to$("open raycast://extensions/thomas/visual-studio-code/index"),
+
+    // Activate resizing layer
+    map("w").toHyper(),
   ]),
 
-  layer("w", "Ctrl+w")
-    .modifiers("left_control")
-    .configKey((v) => v.toIfAlone("w", "left_control"), false)
-    .manipulators([
+  rule("Resizing layer").manipulators([
+    withModifier("Hyper")([
       rectangle("j", "bottom-half"),
       rectangle("k", "top-half"),
       rectangle("h", "left-half"),
@@ -79,6 +87,7 @@ writeToProfile({ name: "Default profile" }, [
       rectangle("return_or_enter", "maximize"),
       rectangle("o", "restore"),
     ]),
+  ]),
 
   rule(
     "Chrome: Change ctrl+np to arrow keys",

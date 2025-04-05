@@ -675,91 +675,51 @@
                     "value": 1
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "description": "Layer - Ctrl+w",
-            "manipulators": [
+              },
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "w",
-                  "modifiers": {
-                    "mandatory": [
-                      "left_control"
-                    ]
-                  }
+                  "key_code": "w"
                 },
                 "to": [
                   {
-                    "set_variable": {
-                      "name": "Ctrl+w",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "set_variable": {
-                      "name": "__layer",
-                      "value": 1
-                    }
+                    "key_code": "left_command",
+                    "modifiers": [
+                      "option",
+                      "control",
+                      "shift"
+                    ]
                   }
                 ],
                 "conditions": [
                   {
-                    "type": "variable_unless",
-                    "name": "Ctrl+w",
+                    "type": "variable_if",
+                    "name": "layer-tab",
                     "value": 1
-                  },
-                  {
-                    "type": "variable_unless",
-                    "name": "__layer",
-                    "value": 1
-                  }
-                ],
-                "to_after_key_up": [
-                  {
-                    "set_variable": {
-                      "name": "Ctrl+w",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "set_variable": {
-                      "name": "__layer",
-                      "value": 0
-                    }
-                  }
-                ],
-                "to_if_alone": [
-                  {
-                    "key_code": "w",
-                    "modifiers": [
-                      "left_control"
-                    ]
                   }
                 ]
-              },
+              }
+            ]
+          },
+          {
+            "description": "Resizing layer",
+            "manipulators": [
               {
                 "type": "basic",
                 "from": {
                   "key_code": "j",
                   "modifiers": {
                     "mandatory": [
-                      "any"
+                      "command",
+                      "option",
+                      "control",
+                      "shift"
                     ]
                   }
                 },
                 "to": [
                   {
                     "shell_command": "open -g rectangle://execute-action?name=bottom-half"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "variable_if",
-                    "name": "Ctrl+w",
-                    "value": 1
                   }
                 ]
               },
@@ -769,20 +729,16 @@
                   "key_code": "k",
                   "modifiers": {
                     "mandatory": [
-                      "any"
+                      "command",
+                      "option",
+                      "control",
+                      "shift"
                     ]
                   }
                 },
                 "to": [
                   {
                     "shell_command": "open -g rectangle://execute-action?name=top-half"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "variable_if",
-                    "name": "Ctrl+w",
-                    "value": 1
                   }
                 ]
               },
@@ -792,20 +748,16 @@
                   "key_code": "h",
                   "modifiers": {
                     "mandatory": [
-                      "any"
+                      "command",
+                      "option",
+                      "control",
+                      "shift"
                     ]
                   }
                 },
                 "to": [
                   {
                     "shell_command": "open -g rectangle://execute-action?name=left-half"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "variable_if",
-                    "name": "Ctrl+w",
-                    "value": 1
                   }
                 ]
               },
@@ -815,20 +767,16 @@
                   "key_code": "l",
                   "modifiers": {
                     "mandatory": [
-                      "any"
+                      "command",
+                      "option",
+                      "control",
+                      "shift"
                     ]
                   }
                 },
                 "to": [
                   {
                     "shell_command": "open -g rectangle://execute-action?name=right-half"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "variable_if",
-                    "name": "Ctrl+w",
-                    "value": 1
                   }
                 ]
               },
@@ -838,20 +786,16 @@
                   "key_code": "return_or_enter",
                   "modifiers": {
                     "mandatory": [
-                      "any"
+                      "command",
+                      "option",
+                      "control",
+                      "shift"
                     ]
                   }
                 },
                 "to": [
                   {
                     "shell_command": "open -g rectangle://execute-action?name=maximize"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "variable_if",
-                    "name": "Ctrl+w",
-                    "value": 1
                   }
                 ]
               },
@@ -861,20 +805,16 @@
                   "key_code": "o",
                   "modifiers": {
                     "mandatory": [
-                      "any"
+                      "command",
+                      "option",
+                      "control",
+                      "shift"
                     ]
                   }
                 },
                 "to": [
                   {
                     "shell_command": "open -g rectangle://execute-action?name=restore"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "variable_if",
-                    "name": "Ctrl+w",
-                    "value": 1
                   }
                 ]
               }
