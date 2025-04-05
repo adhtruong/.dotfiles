@@ -24,7 +24,7 @@ ZSH_THEME="robbyrussell"
 # HYPHEN_INSENSITIVE="true"
 
 # Uncomment one of the following lines to change the auto-update behavior
-zstyle ':omz:update' mode disabled  # disable automatic updates
+zstyle ':omz:update' mode disabled # disable automatic updates
 # zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
@@ -71,17 +71,18 @@ zstyle ':omz:update' mode disabled  # disable automatic updates
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  gitfast
-  vi-mode
-  fzf-tab
-  zsh-autosuggestions
-  zsh-syntax-highlighting
+	gitfast
+	vi-mode
+	fzf-tab
+	zsh-autosuggestions
+	zsh-syntax-highlighting
 )
 
 source "$ZSH"/oh-my-zsh.sh
 
 # User configuration
 
+zstyle ':completion:*:*:make:*' tag-order 'targets'
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
@@ -89,9 +90,9 @@ source "$ZSH"/oh-my-zsh.sh
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
+	export EDITOR='vim'
 else
-  export EDITOR='nvim'
+	export EDITOR='nvim'
 fi
 
 unsetopt BEEP
@@ -122,24 +123,23 @@ alias tmuxroot='cd $(tmux display-message -p -F "#{session_path}")'
 alias code='env -u TMUX -u VIRTUAL_ENV code'
 
 # Set up fzf key bindings and fuzzy completion
-source <(fzf --zsh)
+FZF_ALT_C_COMMAND= source <(fzf --zsh)
 
 export FZF_DEFAULT_OPTS="--height=80% --tmux 70% --ansi --border --layout=reverse --border --margin=1 --padding=1"
 
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
 
 # Use fd (https://github.com/sharkdp/fd) for listing path candidates.
 # - The first argument to the function ($1) is the base path to start traversal
 # - See the source code (completion.{bash,zsh}) for the details.
 _fzf_compgen_path() {
-  fd --hidden --exclude .git . "$1"
+	fd --hidden --exclude .git . "$1"
 }
 
 # Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
-  fd --type=d --hidden --exclude .git . "$1"
+	fd --type=d --hidden --exclude .git . "$1"
 }
 
 # Note a plugin but store in to reuse scripts
@@ -152,16 +152,16 @@ eval $(uv generate-shell-completion zsh)
 eval $(uvx --generate-shell-completion zsh)
 
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
-  session_name="default"
-  if [[ "$PWD" != "$HOME" ]]; then
-    session_name=$(basename "$PWD")
-  fi
-  tmux new -A -s "$session_name" && exit
+	session_name="default"
+	if [[ "$PWD" != "$HOME" ]]; then
+		session_name=$(basename "$PWD")
+	fi
+	tmux new -A -s "$session_name" && exit
 fi
 
 TARGET_ENV=${VIRTUAL_ENV:-.venv}
 if [[ -e "${TARGET_ENV}/bin/activate" ]]; then
-  source "${TARGET_ENV}/bin/activate"
+	source "${TARGET_ENV}/bin/activate"
 fi
 
 function y() {
