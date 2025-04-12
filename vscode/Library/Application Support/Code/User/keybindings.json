@@ -131,11 +131,6 @@
     "command": "editor.action.quickFix",
     "when": "editorHasCodeActionsProvider && editorTextFocus && !editorReadonly"
   },
-  {
-    "key": "shift+;",
-    "command": "vim.showQuickpickCmdLine",
-    "when": "editorTextFocus && vim.mode != 'Insert'"
-  },
   // Git
   {
     "key": "ctrl+g p", // Open diff preview

@@ -137,6 +137,11 @@
   ],
   "vim.normalModeKeyBindingsNonRecursive": [
     {
+      "before": [":"],
+      "commands": ["vim.showQuickpickCmdLine"],
+      "silent": true
+    },
+    {
       "before": ["]", "d"],
       "commands": ["editor.action.marker.nextInFiles"],
       "silent": true
