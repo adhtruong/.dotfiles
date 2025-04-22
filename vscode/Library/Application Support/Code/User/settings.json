@@ -31,6 +31,8 @@
     "*.ipynb": "jupyter-notebook"
   },
 
+  "terminal.integrated.macOptionIsMeta": true,
+
   "redhat.telemetry.enabled": false,
   "notebook.cellToolbarLocation": {
     "default": "right",

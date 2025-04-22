@@ -65,6 +65,9 @@ zstyle ':omz:update' mode disabled # disable automatic updates
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+fpath+=~/.zfunc
+autoload -Uz compinit && compinit
+
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
@@ -75,6 +78,7 @@ plugins=(
 	vi-mode
 	fzf-tab
 	zsh-autosuggestions
+	zsh-completions
 	zsh-syntax-highlighting
 )
 
@@ -125,7 +129,7 @@ alias code='env -u TMUX -u VIRTUAL_ENV code'
 # Set up fzf key bindings and fuzzy completion
 FZF_ALT_C_COMMAND= source <(fzf --zsh)
 
-export FZF_DEFAULT_OPTS="--height=80% --tmux 70% --ansi --border --layout=reverse --border --margin=1 --padding=1"
+export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=reverse --border --margin=1 --padding=1"
 
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

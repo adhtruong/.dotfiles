@@ -7,3 +7,4 @@ macos-titlebar-proxy-icon = hidden
 quit-after-last-window-closed = true
 confirm-close-surface = false
 resize-overlay = "never"
+macos-option-as-alt = true

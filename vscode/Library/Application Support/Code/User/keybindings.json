@@ -67,7 +67,7 @@
     "when": "editorTextFocus && !sideBarVisible"
   },
   {
-    "key": "n",
+    "key": "a",
     "command": "explorer.newFile",
     "when": "filesExplorerFocus && !inputFocus"
   },

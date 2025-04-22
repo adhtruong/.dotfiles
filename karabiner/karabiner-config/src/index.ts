@@ -1,18 +1,12 @@
 import {
   FromKeyParam,
-  hyperLayer,
   ifApp,
   layer,
   map,
   rule,
   to$,
-  BasicManipulator,
-  toHyper,
-  FromEvent,
   writeToProfile,
-  withMapper,
   withModifier,
-  KeyCode,
 } from "karabiner.ts";
 import { createVimLayer } from "./vim-layer";
 
