@@ -120,7 +120,7 @@
   // Extensions
   {
     "key": "ctrl+shift+f",
-    "command": "workbench.action.findInFiles"
+    "command": "periscope.search"
   },
   {
     "key": "ctrl+/",
