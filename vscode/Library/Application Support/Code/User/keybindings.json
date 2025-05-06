@@ -22,12 +22,28 @@
   {
     "key": "ctrl+h",
     "command": "workbench.action.previousPanelView",
-    "when": "panelFocus"
+    "when": "panelFocus || (!(editorTextFocus || sideBarFocus) && activePanel == 'workbench.panel.testResults' )"
   },
   {
     "key": "ctrl+l",
     "command": "workbench.action.nextPanelView",
-    "when": "panelFocus"
+    "when": "panelFocus || (!(editorTextFocus || sideBarFocus) && activePanel == 'workbench.panel.testResults' )"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "runCommands",
+    "args": {
+      "commands": [
+        "workbench.action.nextPanelView",
+        "workbench.action.previousPanelView"
+      ]
+    },
+    "when": "editorTextFocus && activePanel == 'workbench.panel.testResults'"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "!(editorTextFocus || sideBarFocus) && activePanel == 'workbench.panel.testResults'"
   },
   // Tab switching
   {
@@ -193,5 +209,13 @@
       ]
     },
     "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+=",
+    "command": "workbench.action.increaseViewSize"
+  },
+  {
+    "key": "ctrl+-",
+    "command": "workbench.action.decreaseViewSize"
   }
 ]
