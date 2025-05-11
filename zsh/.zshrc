@@ -1,3 +1,5 @@
+# zmodload zsh/zprof
+
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
@@ -66,7 +68,11 @@ zstyle ':omz:update' mode disabled # disable automatic updates
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
 fpath+=~/.zfunc
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+for dump in ~/.zcompdump(N.mh+24); do
+  compinit
+done
+compinit -C
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
@@ -125,6 +131,7 @@ alias tmuxroot='cd $(tmux display-message -p -F "#{session_path}")'
 
 # Required for project level session set up
 alias code='env -u TMUX -u VIRTUAL_ENV code'
+alias cursor='env -u TMUX -u VIRTUAL_ENV cursor'
 
 # Set up fzf key bindings and fuzzy completion
 FZF_ALT_C_COMMAND= source <(fzf --zsh)
