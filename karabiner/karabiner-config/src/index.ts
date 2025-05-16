@@ -58,7 +58,13 @@ const applicationModifiers = [
     "https://www.google.com/search?q=timer"
   ),
 
-  map("p").to$("open raycast://extensions/thomas/visual-studio-code/index"),
+  mapDoubleTap("p")
+    .to(
+      to$("open raycast://extensions/degouville/cursor-recent-projects/index")
+    )
+    .singleTap(
+      to$("open raycast://extensions/thomas/visual-studio-code/index")
+    ),
 ];
 
 writeToProfile({ name: "Default profile" }, [
@@ -66,6 +72,13 @@ writeToProfile({ name: "Default profile" }, [
     map("caps_lock", null, "any")
       .to([{ key_code: "left_control", lazy: true }])
       .toIfAlone("escape"),
+
+    map(";")
+      .to({
+        key_code: "right_control",
+        lazy: true,
+      })
+      .toIfAlone(";"),
   ]),
 
   layer("tab").manipulators([
@@ -75,10 +88,12 @@ writeToProfile({ name: "Default profile" }, [
     map("w").toMeh(),
   ]),
 
-  layer(["s", "e"])
-    .modifiers("left_control")
-    .configKey((v) => v.toIfAlone("s", "left_control"), false)
-    .manipulators([...applicationModifiers]),
+  ...(["s", "e"] as const).map((key) =>
+    layer(key)
+      .modifiers("left_control")
+      .configKey((v) => v.toIfAlone(key, "left_control"), false)
+      .manipulators([...applicationModifiers])
+  ),
 
   layer("r")
     .modifiers("left_control")
