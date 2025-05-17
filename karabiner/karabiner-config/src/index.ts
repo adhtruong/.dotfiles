@@ -27,7 +27,10 @@ const applicationModifiers = [
   map("h").toApp("Obsidian"),
   map("j").toApp("Google Chrome"),
   map("k").toApp("Ghostty"),
-  mapDoubleTap("l").toApp("Cursor").singleTap(toApp("Visual Studio Code")),
+  mapDoubleTap("l")
+    .delay(250)
+    .toApp("Cursor")
+    .singleTap(toApp("Visual Studio Code")),
   map(";").toApp("Slack"),
 
   map("o").toAfterKeyUp([
@@ -59,6 +62,7 @@ const applicationModifiers = [
   ),
 
   mapDoubleTap("p")
+    .delay(250)
     .to(
       to$("open raycast://extensions/degouville/cursor-recent-projects/index")
     )
@@ -69,6 +73,11 @@ const applicationModifiers = [
 
 writeToProfile({ name: "Default profile" }, [
   rule("Tap Caps Lock for ESC or Hold for Control").manipulators([
+    map("caps_lock", "shift", "any").toIfAlone({
+      key_code: "spacebar",
+      modifiers: ["left_command"],
+    }),
+
     map("caps_lock", null, "any")
       .to([{ key_code: "left_control", lazy: true }])
       .toIfAlone("escape"),
@@ -137,7 +146,7 @@ writeToProfile({ name: "Default profile" }, [
         { key_code: "vk_none" },
       ]),
 
-      map("u").to({ key_code: "q", modifiers: ["right_command"] }),
+      map("u").to({ key_code: "w", modifiers: ["right_command"] }),
     ]),
 
   rule("Resizing layer").manipulators([

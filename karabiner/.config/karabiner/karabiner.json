@@ -11,6 +11,28 @@
                 "from": {
                   "key_code": "caps_lock",
                   "modifiers": {
+                    "mandatory": [
+                      "shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to_if_alone": [
+                  {
+                    "key_code": "spacebar",
+                    "modifiers": [
+                      "left_command"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "caps_lock",
+                  "modifiers": {
                     "optional": [
                       "any"
                     ]
@@ -246,7 +268,7 @@
                   ]
                 },
                 "parameters": {
-                  "basic.to_delayed_action_delay_milliseconds": 200
+                  "basic.to_delayed_action_delay_milliseconds": 250
                 }
               },
               {
@@ -546,7 +568,7 @@
                   ]
                 },
                 "parameters": {
-                  "basic.to_delayed_action_delay_milliseconds": 200
+                  "basic.to_delayed_action_delay_milliseconds": 250
                 }
               },
               {
@@ -780,7 +802,7 @@
                   ]
                 },
                 "parameters": {
-                  "basic.to_delayed_action_delay_milliseconds": 200
+                  "basic.to_delayed_action_delay_milliseconds": 250
                 }
               },
               {
@@ -1080,7 +1102,7 @@
                   ]
                 },
                 "parameters": {
-                  "basic.to_delayed_action_delay_milliseconds": 200
+                  "basic.to_delayed_action_delay_milliseconds": 250
                 }
               }
             ]
@@ -1292,7 +1314,7 @@
                   ]
                 },
                 "parameters": {
-                  "basic.to_delayed_action_delay_milliseconds": 200
+                  "basic.to_delayed_action_delay_milliseconds": 250
                 }
               },
               {
@@ -1592,7 +1614,7 @@
                   ]
                 },
                 "parameters": {
-                  "basic.to_delayed_action_delay_milliseconds": 200
+                  "basic.to_delayed_action_delay_milliseconds": 250
                 }
               }
             ]
@@ -2037,7 +2059,7 @@
                 },
                 "to": [
                   {
-                    "key_code": "q",
+                    "key_code": "w",
                     "modifiers": [
                       "right_command"
                     ]
