@@ -33,6 +33,25 @@
                 "from": {
                   "key_code": "caps_lock",
                   "modifiers": {
+                    "mandatory": [
+                      "right_control"
+                    ]
+                  }
+                },
+                "to_if_alone": [
+                  {
+                    "key_code": "spacebar",
+                    "modifiers": [
+                      "left_command"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "caps_lock",
+                  "modifiers": {
                     "optional": [
                       "any"
                     ]
@@ -53,19 +72,27 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "semicolon"
-                },
-                "to": [
-                  {
-                    "key_code": "right_control",
-                    "lazy": true
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
                   }
-                ],
+                },
                 "to_if_alone": [
                   {
+                    "halt": true,
                     "key_code": "semicolon"
                   }
-                ]
+                ],
+                "to_if_held_down": [
+                  {
+                    "key_code": "right_control"
+                  }
+                ],
+                "parameters": {
+                  "basic.to_if_held_down_threshold_milliseconds": 50
+                }
               }
             ]
           },
@@ -604,7 +631,7 @@
                   "key_code": "s",
                   "modifiers": {
                     "mandatory": [
-                      "left_control"
+                      "control"
                     ]
                   }
                 },
@@ -1116,7 +1143,7 @@
                   "key_code": "e",
                   "modifiers": {
                     "mandatory": [
-                      "left_control"
+                      "control"
                     ]
                   }
                 },
@@ -1628,7 +1655,7 @@
                   "key_code": "r",
                   "modifiers": {
                     "mandatory": [
-                      "left_control"
+                      "control"
                     ]
                   }
                 },
@@ -1830,7 +1857,7 @@
                   "key_code": "f",
                   "modifiers": {
                     "mandatory": [
-                      "left_control"
+                      "control"
                     ]
                   }
                 },
@@ -2059,7 +2086,92 @@
                 },
                 "to": [
                   {
-                    "key_code": "w",
+                    "key_code": "q",
+                    "modifiers": [
+                      "right_command"
+                    ]
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "variable_if",
+                    "name": "double-tap-u",
+                    "value": 1
+                  }
+                ],
+                "description": "__support__manipulator"
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "u",
+                  "modifiers": {
+                    "mandatory": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "set_variable": {
+                      "name": "double-tap-u",
+                      "value": 1
+                    }
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "variable_unless",
+                    "name": "double-tap-u",
+                    "value": 1
+                  },
+                  {
+                    "type": "variable_if",
+                    "name": "layer-f",
+                    "value": 1
+                  }
+                ],
+                "to_delayed_action": {
+                  "to_if_invoked": [
+                    {
+                      "key_code": "w",
+                      "modifiers": [
+                        "right_command"
+                      ]
+                    },
+                    {
+                      "set_variable": {
+                        "name": "double-tap-u",
+                        "value": 0
+                      }
+                    }
+                  ],
+                  "to_if_canceled": [
+                    {
+                      "set_variable": {
+                        "name": "double-tap-u",
+                        "value": 0
+                      }
+                    }
+                  ]
+                },
+                "parameters": {
+                  "basic.to_delayed_action_delay_milliseconds": 200
+                }
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "right_shift",
+                  "modifiers": {
+                    "mandatory": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "escape",
                     "modifiers": [
                       "right_command"
                     ]

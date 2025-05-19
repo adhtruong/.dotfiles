@@ -8,3 +8,5 @@ quit-after-last-window-closed = true
 confirm-close-surface = false
 resize-overlay = "never"
 macos-option-as-alt = true
+window-width = 9999
+window-height = 9999

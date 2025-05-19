@@ -9,6 +9,8 @@ import {
   withModifier,
   mapDoubleTap,
   toApp,
+  ModifierKeyCode,
+  ToKeyParam,
 } from "karabiner.ts";
 
 function toLink(link: string, alias: string = "") {
@@ -77,17 +79,21 @@ writeToProfile({ name: "Default profile" }, [
       key_code: "spacebar",
       modifiers: ["left_command"],
     }),
+    map("caps_lock", "right_control").toIfAlone({
+      key_code: "spacebar",
+      modifiers: ["left_command"],
+    }),
 
     map("caps_lock", null, "any")
       .to([{ key_code: "left_control", lazy: true }])
       .toIfAlone("escape"),
 
-    map(";")
-      .to({
-        key_code: "right_control",
-        lazy: true,
-      })
-      .toIfAlone(";"),
+    map(";", "optionalAny")
+      .toIfAlone(";", undefined, { halt: true })
+      .toIfHeldDown("right_control", undefined, {})
+      .parameters({
+        "basic.to_if_held_down_threshold_milliseconds": 50,
+      }),
   ]),
 
   layer("tab").manipulators([
@@ -99,13 +105,13 @@ writeToProfile({ name: "Default profile" }, [
 
   ...(["s", "e"] as const).map((key) =>
     layer(key)
-      .modifiers("left_control")
+      .modifiers("control")
       .configKey((v) => v.toIfAlone(key, "left_control"), false)
       .manipulators([...applicationModifiers])
   ),
 
   layer("r")
-    .modifiers("left_control")
+    .modifiers("control")
     .configKey((v) => v.toIfAlone("r", "left_control"), false)
     .manipulators([
       rectangle("j", "bottom-half"),
@@ -117,7 +123,7 @@ writeToProfile({ name: "Default profile" }, [
     ]),
 
   layer("f")
-    .modifiers("left_control")
+    .modifiers("control")
     .configKey((v) => v.toIfAlone("f", "left_control"), false)
     .manipulators([
       map("j").to({ key_code: "tab", modifiers: ["right_command"] }),
@@ -146,7 +152,19 @@ writeToProfile({ name: "Default profile" }, [
         { key_code: "vk_none" },
       ]),
 
-      map("u").to({ key_code: "w", modifiers: ["right_command"] }),
+      mapDoubleTap("u")
+        .to({
+          key_code: "q",
+          modifiers: ["right_command"],
+        })
+        .singleTap({
+          key_code: "w",
+          modifiers: ["right_command"],
+        }),
+      map("right_shift").to({
+        key_code: "escape",
+        modifiers: ["right_command"],
+      }),
     ]),
 
   rule("Resizing layer").manipulators([
