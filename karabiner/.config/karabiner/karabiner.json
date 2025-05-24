@@ -11,47 +11,6 @@
                 "from": {
                   "key_code": "caps_lock",
                   "modifiers": {
-                    "mandatory": [
-                      "shift"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to_if_alone": [
-                  {
-                    "key_code": "spacebar",
-                    "modifiers": [
-                      "left_command"
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
-                  "key_code": "caps_lock",
-                  "modifiers": {
-                    "mandatory": [
-                      "right_control"
-                    ]
-                  }
-                },
-                "to_if_alone": [
-                  {
-                    "key_code": "spacebar",
-                    "modifiers": [
-                      "left_command"
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
-                  "key_code": "caps_lock",
-                  "modifiers": {
                     "optional": [
                       "any"
                     ]
@@ -66,6 +25,37 @@
                 "to_if_alone": [
                   {
                     "key_code": "escape"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Hold ; for Control",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": [
+                      "control"
+                    ]
+                  }
+                },
+                "to_if_alone": [
+                  {
+                    "key_code": "spacebar",
+                    "modifiers": [
+                      "left_command"
+                    ]
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "variable_unless",
+                    "name": "__layer",
+                    "value": 1
                   }
                 ]
               },
@@ -92,7 +82,14 @@
                 ],
                 "parameters": {
                   "basic.to_if_held_down_threshold_milliseconds": 50
-                }
+                },
+                "conditions": [
+                  {
+                    "type": "variable_unless",
+                    "name": "__layer",
+                    "value": 1
+                  }
+                ]
               }
             ]
           },
@@ -2156,7 +2153,7 @@
                   ]
                 },
                 "parameters": {
-                  "basic.to_delayed_action_delay_milliseconds": 200
+                  "basic.to_delayed_action_delay_milliseconds": 250
                 }
               },
               {

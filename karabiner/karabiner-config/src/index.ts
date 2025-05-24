@@ -1,5 +1,4 @@
 import {
-  FromKeyParam,
   ifApp,
   layer,
   map,
@@ -9,21 +8,9 @@ import {
   withModifier,
   mapDoubleTap,
   toApp,
-  ModifierKeyCode,
-  ToKeyParam,
+  withCondition,
 } from "karabiner.ts";
-
-function toLink(link: string, alias: string = "") {
-  return to$(`~/bin/find-or-open-tab ${link} ${alias}`);
-}
-
-function mapToLink(key: FromKeyParam, link: string, alias: string = "") {
-  return map(key).to(toLink(link, alias));
-}
-
-function rectangle(key: FromKeyParam, name: string) {
-  return map(key).to$(`open -g rectangle://execute-action?name=${name}`);
-}
+import { ifLayer, mapToLink, rectangle } from "./utils";
 
 const applicationModifiers = [
   map("h").toApp("Obsidian"),
@@ -75,26 +62,25 @@ const applicationModifiers = [
 
 writeToProfile({ name: "Default profile" }, [
   rule("Tap Caps Lock for ESC or Hold for Control").manipulators([
-    map("caps_lock", "shift", "any").toIfAlone({
-      key_code: "spacebar",
-      modifiers: ["left_command"],
-    }),
-    map("caps_lock", "right_control").toIfAlone({
-      key_code: "spacebar",
-      modifiers: ["left_command"],
-    }),
-
     map("caps_lock", null, "any")
       .to([{ key_code: "left_control", lazy: true }])
       .toIfAlone("escape"),
-
-    map(";", "optionalAny")
-      .toIfAlone(";", undefined, { halt: true })
-      .toIfHeldDown("right_control", undefined, {})
-      .parameters({
-        "basic.to_if_held_down_threshold_milliseconds": 50,
-      }),
   ]),
+
+  rule("Hold ; for Control").manipulators(
+    withCondition(ifLayer().unless())([
+      map(";", "control", undefined).toIfAlone({
+        key_code: "spacebar",
+        modifiers: ["left_command"],
+      }),
+      map(";", "optionalAny")
+        .toIfAlone(";", undefined, { halt: true })
+        .toIfHeldDown("right_control", undefined, {})
+        .parameters({
+          "basic.to_if_held_down_threshold_milliseconds": 50,
+        }),
+    ])
+  ),
 
   layer("tab").manipulators([
     ...applicationModifiers,
@@ -153,6 +139,7 @@ writeToProfile({ name: "Default profile" }, [
       ]),
 
       mapDoubleTap("u")
+        .delay(250)
         .to({
           key_code: "q",
           modifiers: ["right_command"],

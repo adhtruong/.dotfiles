@@ -1,4 +1,7 @@
-# zmodload zsh/zprof
+export PROFILING_MODE=0
+if [ $PROFILING_MODE -ne 0 ]; then
+	zmodload zsh/zprof
+fi
 
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
@@ -69,10 +72,9 @@ zstyle ':omz:update' mode disabled # disable automatic updates
 
 fpath+=~/.zfunc
 autoload -Uz compinit
-for dump in ~/.zcompdump(N.mh+24); do
-  compinit
-done
-compinit -C
+if [ ! -f ~/.zcompdump ] || [ "$(find ~/.zcompdump -mtime +1 2>/dev/null)" ]; then
+	compinit
+fi
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
@@ -183,3 +185,7 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
+if [ $PROFILING_MODE -ne 0 ]; then
+	zprof
+fi
