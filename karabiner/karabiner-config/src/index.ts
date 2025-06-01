@@ -4,22 +4,18 @@ import {
   map,
   rule,
   to$,
-  writeToProfile,
-  withModifier,
-  mapDoubleTap,
   toApp,
   withCondition,
+  withModifier,
+  writeToProfile,
 } from "karabiner.ts";
-import { ifLayer, mapToLink, rectangle } from "./utils";
+import { createLayer, doubleTap, ifLayer, mapToLink, rectangle } from "./utils";
 
 const applicationModifiers = [
   map("h").toApp("Obsidian"),
   map("j").toApp("Google Chrome"),
   map("k").toApp("Ghostty"),
-  mapDoubleTap("l")
-    .delay(250)
-    .toApp("Cursor")
-    .singleTap(toApp("Visual Studio Code")),
+  doubleTap("l").toApp("Cursor").singleTap(toApp("Visual Studio Code")),
   map(";").toApp("Slack"),
 
   map("o").toAfterKeyUp([
@@ -50,8 +46,7 @@ const applicationModifiers = [
     "https://www.google.com/search?q=timer"
   ),
 
-  mapDoubleTap("p")
-    .delay(250)
+  doubleTap("p")
     .to(
       to$("open raycast://extensions/degouville/cursor-recent-projects/index")
     )
@@ -90,69 +85,59 @@ writeToProfile({ name: "Default profile" }, [
   ]),
 
   ...(["s", "e"] as const).map((key) =>
-    layer(key)
-      .modifiers("control")
-      .configKey((v) => v.toIfAlone(key, "left_control"), false)
-      .manipulators([...applicationModifiers])
+    createLayer(key).manipulators(applicationModifiers)
   ),
 
-  layer("r")
-    .modifiers("control")
-    .configKey((v) => v.toIfAlone("r", "left_control"), false)
-    .manipulators([
-      rectangle("j", "bottom-half"),
-      rectangle("k", "top-half"),
-      rectangle("h", "left-half"),
-      rectangle("l", "right-half"),
-      rectangle("return_or_enter", "maximize"),
-      rectangle("o", "restore"),
+  createLayer("r").manipulators([
+    rectangle("j", "bottom-half"),
+    rectangle("k", "top-half"),
+    rectangle("h", "left-half"),
+    rectangle("l", "right-half"),
+    rectangle("return_or_enter", "maximize"),
+    rectangle("o", "restore"),
+  ]),
+
+  createLayer("f").manipulators([
+    map("j").to({ key_code: "tab", modifiers: ["right_command"] }),
+    map("k").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+
+    map("l").to({
+      key_code: "grave_accent_and_tilde",
+      modifiers: ["right_command"],
+    }),
+    map("h").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+
+    map("o").toAfterKeyUp([
+      {
+        key_code: "tab",
+        modifiers: ["right_command"],
+        hold_down_milliseconds: 20,
+      },
+      { key_code: "vk_none" },
     ]),
-
-  layer("f")
-    .modifiers("control")
-    .configKey((v) => v.toIfAlone("f", "left_control"), false)
-    .manipulators([
-      map("j").to({ key_code: "tab", modifiers: ["right_command"] }),
-      map("k").to({ key_code: "left_shift", modifiers: ["right_command"] }),
-
-      map("l").to({
+    map("i").toAfterKeyUp([
+      {
         key_code: "grave_accent_and_tilde",
         modifiers: ["right_command"],
-      }),
-      map("h").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+        hold_down_milliseconds: 20,
+      },
+      { key_code: "vk_none" },
+    ]),
 
-      map("o").toAfterKeyUp([
-        {
-          key_code: "tab",
-          modifiers: ["right_command"],
-          hold_down_milliseconds: 20,
-        },
-        { key_code: "vk_none" },
-      ]),
-      map("i").toAfterKeyUp([
-        {
-          key_code: "grave_accent_and_tilde",
-          modifiers: ["right_command"],
-          hold_down_milliseconds: 20,
-        },
-        { key_code: "vk_none" },
-      ]),
-
-      mapDoubleTap("u")
-        .delay(250)
-        .to({
-          key_code: "q",
-          modifiers: ["right_command"],
-        })
-        .singleTap({
-          key_code: "w",
-          modifiers: ["right_command"],
-        }),
-      map("right_shift").to({
-        key_code: "escape",
+    doubleTap("u")
+      .to({
+        key_code: "q",
+        modifiers: ["right_command"],
+      })
+      .singleTap({
+        key_code: "w",
         modifiers: ["right_command"],
       }),
-    ]),
+    map("right_shift").to({
+      key_code: "escape",
+      modifiers: ["right_command"],
+    }),
+  ]),
 
   rule("Resizing layer").manipulators([
     withModifier("Meh")([
