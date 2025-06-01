@@ -5,6 +5,19 @@ on run argv
         return 1
     end if
 
+    tell application "System Events"
+        # Check if Raycast is running and has windows
+        if exists (processes whose name is "Raycast") then
+            tell process "Raycast"
+                # Try to close any visible windows
+                if exists window 1 then
+                    # Press Escape to dismiss the popup
+                    key code 53
+                end if
+            end tell
+        end if
+    end tell
+
     set searchTerms to items of argv -- Get all search terms from arguments
 
     tell application "Google Chrome"

@@ -136,12 +136,13 @@ alias code='env -u TMUX -u VIRTUAL_ENV code'
 alias cursor='env -u TMUX -u VIRTUAL_ENV cursor'
 
 # Set up fzf key bindings and fuzzy completion
-FZF_ALT_C_COMMAND= source <(fzf --zsh)
+FZF_ALT_C_COMMAND='' source <(fzf --zsh)
 
 export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=reverse --border --margin=1 --padding=1"
 
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+bindkey "^U" backward-kill-line
 
 # Use fd (https://github.com/sharkdp/fd) for listing path candidates.
 # - The first argument to the function ($1) is the base path to start traversal
@@ -157,7 +158,7 @@ _fzf_compgen_dir() {
 
 # Note a plugin but store in to reuse scripts
 # https://github.com/junegunn/fzf-git.sh/pull/59/files
-source $ZSH_CUSTOM/plugins/fzf-git.sh/fzf-git.sh
+source "$ZSH_CUSTOM"/plugins/fzf-git.sh/fzf-git.sh
 
 eval "$(zoxide init zsh --cmd cd)"
 
