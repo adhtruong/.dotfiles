@@ -142,7 +142,7 @@ export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=revers
 
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-bindkey "^U" backward-kill-line
+bindkey "^u" kill-whole-line
 
 # Use fd (https://github.com/sharkdp/fd) for listing path candidates.
 # - The first argument to the function ($1) is the base path to start traversal
