@@ -2,8 +2,7 @@
 all: install-bundle link
 
 link:
-	stow --verbose --target=$$HOME -R --ignore=karabiner */
-	stow --verbose --target=$$HOME -R --adopt karabiner
+	stow --verbose --target=$$HOME -R */
 
 .PHONY: delete
 delete:
@@ -16,6 +15,10 @@ brewfile:
 .PHONY: install-bundle
 install-bundle:
 	brew bundle --no-upgrade
+
+.PHONY: karabiner
+karabiner:
+	@cd karabiner/karabiner-config && npm ci && npm run build
 
 .PHONY: lint
 lint:

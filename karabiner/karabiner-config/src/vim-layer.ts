@@ -1,22 +1,29 @@
-import { duoLayer, map } from "karabiner.ts";
+import { map } from "karabiner.ts";
+import { createLayer } from "./utils";
 
 export function createVimLayer() {
   return [
-    duoLayer("f", ";", "vim-layer")
-      .leaderMode({ sticky: true })
-      .notification()
-      .manipulators([
-        map("j", null, "shift").to("down_arrow"),
-        map("h", null, "shift").to("left_arrow"),
-        map("k", null, "shift").to("up_arrow"),
-        map("l", null, "shift").to("right_arrow"),
-
-        map("i", null, "shift").to("left_arrow", "left_command"),
-        map("o", null, "shift").to("right_arrow", "left_command"),
-
-        map("b", null, "shift").to("left_arrow", "left_option"),
-        map("w", null, "shift").to("right_arrow", "left_option"),
-        map("e", null, "shift").to("right_arrow", "left_option"),
-      ]),
+    createLayer("s").manipulators([
+      map("j").to("down_arrow"),
+      map("h").to("left_arrow"),
+      map("k").to("up_arrow"),
+      map("l").to("right_arrow"),
+      map("b").to("left_arrow", "left_option"),
+      map("e").to("right_arrow", "left_option"),
+    ]),
+    createLayer("v").manipulators([
+      map("j").to("down_arrow", "shift"),
+      map("h").to("left_arrow", "shift"),
+      map("k").to("up_arrow", "shift"),
+      map("l").to("right_arrow", "shift"),
+      map("b").to({
+        key_code: "left_arrow",
+        modifiers: ["left_option", "shift"],
+      }),
+      map("e").to({
+        key_code: "right_arrow",
+        modifiers: ["left_option", "shift"],
+      }),
+    ]),
   ];
 }

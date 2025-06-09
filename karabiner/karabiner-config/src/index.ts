@@ -10,8 +10,9 @@ import {
   writeToProfile,
 } from "karabiner.ts";
 import { createLayer, doubleTap, ifLayer, mapToLink, rectangle } from "./utils";
+import { createVimLayer } from "./vim-layer";
 
-const applicationModifiers = [
+const applicationManipulators = [
   map("h").toApp("Obsidian"),
   map("j").toApp("Google Chrome"),
   map("k").toApp("Ghostty"),
@@ -78,14 +79,14 @@ writeToProfile({ name: "Default profile" }, [
   ),
 
   layer("tab").manipulators([
-    ...applicationModifiers,
+    ...applicationManipulators,
 
     // Activate resizing layer
     map("w").toMeh(),
   ]),
 
-  ...(["s", "e"] as const).map((key) =>
-    createLayer(key).manipulators(applicationModifiers)
+  ...(["e"] as const).map((key) =>
+    createLayer(key).manipulators(applicationManipulators)
   ),
 
   createLayer("r").manipulators([
@@ -96,6 +97,8 @@ writeToProfile({ name: "Default profile" }, [
     rectangle("return_or_enter", "maximize"),
     rectangle("o", "restore"),
   ]),
+
+  ...createVimLayer(),
 
   createLayer("f").manipulators([
     map("j").to({ key_code: "tab", modifiers: ["right_command"] }),
@@ -139,20 +142,15 @@ writeToProfile({ name: "Default profile" }, [
     }),
   ]),
 
-  rule("Resizing layer").manipulators([
-    withModifier("Meh")([
-      rectangle("j", "bottom-half"),
-      rectangle("k", "top-half"),
-      rectangle("h", "left-half"),
-      rectangle("l", "right-half"),
-      rectangle("return_or_enter", "maximize"),
-      rectangle("o", "restore"),
-    ]),
+  rule("Ghostty remap window commands to tmux", ifApp("ghostty")).manipulators([
+    map("t", "command").toTypeSequence("`c"),
+    map("w", "command").toTypeSequence("`x"),
+    map("n", "command").toTypeSequence("`t"),
   ]),
 
   rule(
     "Chrome: Change ctrl+np to arrow keys",
-    ifApp(["^com\\.google\\.Chrome", "^com\\.tinyspeck\\.slackmacgap"])
+    ifApp(["Chrome", "Slack"])
   ).manipulators([
     map("n", "left_control").to("down_arrow"),
     map("p", "left_control").to("up_arrow"),
@@ -160,7 +158,7 @@ writeToProfile({ name: "Default profile" }, [
 
   rule(
     "Chrome: improve new tab vimium behaviour",
-    ifApp(["^com\\.google\\.Chrome$"])
+    ifApp("Chrome")
   ).manipulators([
     map("t", "command").to([
       { key_code: "t" },
