@@ -6,7 +6,6 @@ import {
   to$,
   toApp,
   withCondition,
-  withModifier,
   writeToProfile,
 } from "karabiner.ts";
 import { createLayer, doubleTap, ifLayer, mapToLink, rectangle } from "./utils";
@@ -150,10 +149,13 @@ writeToProfile({ name: "Default profile" }, [
 
   rule(
     "Chrome: Change ctrl+np to arrow keys",
-    ifApp(["Chrome", "Slack"])
+    ifApp(["Chrome", "slack"])
   ).manipulators([
     map("n", "left_control").to("down_arrow"),
     map("p", "left_control").to("up_arrow"),
+
+    map("o", "left_control").to("[", "left_command"),
+    map("i", "left_control").to("]", "left_command"),
   ]),
 
   rule(
