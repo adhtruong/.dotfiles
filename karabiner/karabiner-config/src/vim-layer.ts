@@ -10,6 +10,9 @@ export function createVimLayer() {
       map("l").to("right_arrow"),
       map("b").to("left_arrow", "left_option"),
       map("e").to("right_arrow", "left_option"),
+
+      map("p").to("v", "left_command"),
+      map("y").to("c", "left_command"),
     ]),
     createLayer("v").manipulators([
       map("j").to("down_arrow", "shift"),
