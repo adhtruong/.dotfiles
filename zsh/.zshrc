@@ -130,6 +130,7 @@ unsetopt BEEP
 alias vim=nvim
 alias gitroot='cd $(git rev-parse --show-toplevel)'
 alias tmuxroot='cd $(tmux display-message -p -F "#{session_path}")'
+alias root='cd $(tmux display-message -p -F "#{session_path}")'
 
 # Required for project level session set up
 alias code='env -u TMUX -u VIRTUAL_ENV code'

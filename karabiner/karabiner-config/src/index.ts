@@ -8,7 +8,14 @@ import {
   withCondition,
   writeToProfile,
 } from "karabiner.ts";
-import { createLayer, doubleTap, ifLayer, mapToLink, rectangle } from "./utils";
+import {
+  createLayer,
+  doubleTap,
+  ifLayer,
+  mapToLink,
+  rectangle,
+  toSwitchWindow,
+} from "./utils";
 import { createVimLayer } from "./vim-layer";
 
 const applicationManipulators = [
@@ -103,11 +110,14 @@ writeToProfile({ name: "Default profile" }, [
     map("j").to({ key_code: "tab", modifiers: ["right_command"] }),
     map("k").to({ key_code: "left_shift", modifiers: ["right_command"] }),
 
-    map("l").to({
+    map("n").to({
       key_code: "grave_accent_and_tilde",
       modifiers: ["right_command"],
     }),
-    map("h").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+    map("p").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+
+    map("h").to(toSwitchWindow("left")),
+    map("l").to(toSwitchWindow("right")),
 
     map("o").toAfterKeyUp([
       {

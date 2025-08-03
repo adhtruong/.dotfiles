@@ -12,6 +12,10 @@ function toLink(link: string, alias = "") {
   return to$(`~/bin/find-or-open-tab ${link} ${alias}`);
 }
 
+export function toSwitchWindow(direction: "left" | "right") {
+  return to$(`~/bin/focus-window ${direction}`);
+}
+
 export function mapToLink(key: FromKeyParam, link: string, alias = "") {
   return map(key).to(toLink(link, alias));
 }
