@@ -102,6 +102,9 @@ writeToProfile({ name: "Default profile" }, [
     rectangle("l", "right-half"),
     rectangle("return_or_enter", "maximize"),
     rectangle("o", "restore"),
+
+    rectangle("n", "next-display"),
+    rectangle("p", "previous-display"),
   ]),
 
   ...createVimLayer(),
