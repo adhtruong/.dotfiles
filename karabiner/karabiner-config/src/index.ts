@@ -62,7 +62,7 @@ const applicationManipulators = [
     ),
 ];
 
-writeToProfile({ name: "Default profile" }, [
+const rules = [
   rule("Tap Caps Lock for ESC or Hold for Control").manipulators([
     map("caps_lock", null, "any")
       .to([{ key_code: "left_control", lazy: true }])
@@ -190,4 +190,6 @@ writeToProfile({ name: "Default profile" }, [
     map("m", "command").toNone(),
     map("h", "command").toNone(),
   ]),
-]);
+];
+
+writeToProfile({ name: "Default profile" }, rules);
