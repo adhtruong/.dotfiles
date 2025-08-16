@@ -41,7 +41,7 @@
   "explorer.decorations.badges": true,
   "explorer.decorations.colors": true,
   "[yaml]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
     "editor.defaultFormatter": "biomejs.biome"

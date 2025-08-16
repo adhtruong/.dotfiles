@@ -23,4 +23,3 @@ repos:
     rev: v2.2.0
     hooks:
       - id: biome-check
-        exclude: vscode|obsidian

@@ -18,6 +18,15 @@
       "recommended": true
     }
   },
+  "json": {
+    "parser": {
+      "allowComments": true
+    },
+    "formatter": {
+      "indentStyle": "space",
+      "indentWidth": 2
+    }
+  },
   "javascript": {
     "formatter": {
       "quoteStyle": "double"

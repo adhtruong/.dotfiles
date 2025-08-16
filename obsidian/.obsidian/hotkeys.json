@@ -1,106 +1,76 @@
 {
   "editor:swap-line-down": [
     {
-      "modifiers": [
-        "Alt"
-      ],
+      "modifiers": ["Alt"],
       "key": "J"
     }
   ],
   "editor:swap-line-up": [
     {
-      "modifiers": [
-        "Alt"
-      ],
+      "modifiers": ["Alt"],
       "key": "K"
     }
   ],
   "app:toggle-left-sidebar": [
     {
-      "modifiers": [
-        "Mod"
-      ],
+      "modifiers": ["Mod"],
       "key": "B"
     },
     {
-      "modifiers": [
-        "Ctrl"
-      ],
+      "modifiers": ["Ctrl"],
       "key": "E"
     }
   ],
   "obsidian-excalidraw-plugin:insert-link": [],
   "editor:context-menu": [
     {
-      "modifiers": [
-        "Ctrl"
-      ],
+      "modifiers": ["Ctrl"],
       "key": "Enter"
     },
     {
-      "modifiers": [
-        "Mod"
-      ],
+      "modifiers": ["Mod"],
       "key": "."
     }
   ],
   "omnisearch:show-modal-infile": [
     {
-      "modifiers": [
-        "Ctrl"
-      ],
+      "modifiers": ["Ctrl"],
       "key": "F"
     }
   ],
   "omnisearch:show-modal": [
     {
-      "modifiers": [
-        "Ctrl",
-        "Shift"
-      ],
+      "modifiers": ["Ctrl", "Shift"],
       "key": "F"
     }
   ],
   "command-palette:open": [
     {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
+      "modifiers": ["Mod", "Shift"],
       "key": "P"
     }
   ],
   "switcher:open": [
     {
-      "modifiers": [
-        "Mod"
-      ],
+      "modifiers": ["Mod"],
       "key": "P"
     }
   ],
   "copy-document-as-html:smart-copy-as-html": [
     {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
+      "modifiers": ["Mod", "Shift"],
       "key": "C"
     }
   ],
   "quick-explorer:browse-current": [
     {
-      "modifiers": [
-        "Ctrl"
-      ],
+      "modifiers": ["Ctrl"],
       "key": "E"
     }
   ],
   "templater-obsidian:insert-templater": [
     {
-      "modifiers": [
-        "Mod",
-        "Shift"
-      ],
+      "modifiers": ["Mod", "Shift"],
       "key": "T"
     }
   ]
