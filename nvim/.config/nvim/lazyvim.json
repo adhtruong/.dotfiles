@@ -1,7 +1,5 @@
 {
-  "extras": [
-    "lazyvim.plugins.extras.formatting.biome"
-  ],
+  "extras": ["lazyvim.plugins.extras.formatting.biome"],
   "install_version": 7,
   "news": {
     "NEWS.md": "10960"
