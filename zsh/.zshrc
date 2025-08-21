@@ -132,11 +132,20 @@ alias gitroot='cd $(git rev-parse --show-toplevel)'
 alias tmuxroot='cd $(tmux display-message -p -F "#{session_path}")'
 alias root='cd $(tmux display-message -p -F "#{session_path}")'
 
+alias g='git'
+alias gs='git status'
+alias gst='git stash'
+alias ga='git add'
+alias gc='git commit'
+alias gco='git checkout'
+alias gb='git branch'
+
 # Required for project level session set up
 alias code='env -u TMUX -u VIRTUAL_ENV code'
 alias cursor='env -u TMUX -u VIRTUAL_ENV cursor'
 
 # Set up fzf key bindings and fuzzy completion
+# shellcheck source=/dev/null
 FZF_ALT_C_COMMAND='' source <(fzf --zsh)
 
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
@@ -164,12 +173,13 @@ _fzf_compgen_dir() {
 
 # Note a plugin but store in to reuse scripts
 # https://github.com/junegunn/fzf-git.sh/pull/59/files
+# shellcheck source=/dev/null
 source "$ZSH_CUSTOM"/plugins/fzf-git.sh/fzf-git.sh
 
 eval "$(zoxide init zsh --cmd cd)"
 
-eval $(uv generate-shell-completion zsh)
-eval $(uvx --generate-shell-completion zsh)
+eval "$(uv generate-shell-completion zsh)"
+eval "$(uvx --generate-shell-completion zsh)"
 
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
 	session_name="default"
@@ -181,8 +191,53 @@ fi
 
 TARGET_ENV=${VIRTUAL_ENV:-.venv}
 if [[ -e "${TARGET_ENV}/bin/activate" ]]; then
+	# shellcheck source=/dev/null
 	source "${TARGET_ENV}/bin/activate"
 fi
+
+# Create a new git worktree relative to repository root
+function git_worktree_add() {
+	local branch_name="$1"
+	local repo_root
+	repo_root=$(git rev-parse --show-toplevel)
+	local worktree_path="$repo_root-features/$branch_name"
+
+	if [[ -z "$branch_name" ]]; then
+		echo "Branch name cannot be empty"
+		return 1
+	fi
+
+	# Check if worktree path already exists
+	if [[ -d "$worktree_path" ]]; then
+		echo "Worktree directory '$worktree_path' already exists"
+		return 1
+	fi
+
+	# Create the worktree
+	git worktree add "$worktree_path" "$branch_name" >/dev/null 2>&1
+
+	if [[ $? -eq 0 ]]; then
+		echo "Created worktree '$branch_name' at $worktree_path"
+	else
+		echo "Failed to create worktree '$branch_name'"
+		return 1
+	fi
+}
+
+_fzf_git_worktrees() {
+	_fzf_git_check || return
+	git worktree list | _fzf_git_fzf \
+		--border-label '🌴 Worktrees ' \
+		--header 'CTRL-X (remove worktree) : CTRL-O (open) : CTRL+A (add)' \
+		--bind 'ctrl-x:reload(git worktree remove {1} > /dev/null; git worktree list)' \
+		--bind 'ctrl-o:execute(sesh connect {1})+abort' \
+		--preview "
+      git -c color.status=$(__fzf_git_color .) -C {1} status --short --branch
+      echo
+      git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' {2} --
+    " "$@" |
+		awk '{print $1}'
+}
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
