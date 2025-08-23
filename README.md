@@ -1,16 +1,16 @@
 # .dotfiles
 
-Repo for managing configuration.
+Repository for managing development environment configuration.
 
 ## Apps
 
-Configuration included
+Configuration included:
 
-- Brew apps
-- VSCode set up - emulating nvim motions
-- Terminal/tmux/shell set up
+- Brew applications
+- VSCode setup - emulating nvim motions
+- Terminal/tmux/shell setup
 
-## Set up
+## Setup
 
 Requires `brew`
 
@@ -21,7 +21,7 @@ make all
 ./preferences import
 ```
 
-Local configuration
+## Local Configuration
 
 - `zsh/.zshrc.local`
 - `git/.gitconfig_local`
