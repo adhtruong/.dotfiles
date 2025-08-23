@@ -201,16 +201,15 @@ _fzf_git_worktrees() {
 	_fzf_git_check || return
 	git worktree list | _fzf_git_fzf \
 		--border-label '🌴 Worktrees ' \
-		--header 'CTRL-X (remove worktree) : CTRL-O (open) : CTRL+A (add)' \
+		--header 'CTRL-X (remove worktree) : CTRL+A (add) : ENTER (open sesh)' \
 		--bind 'ctrl-x:reload(git worktree remove {1} >/dev/null; git delete-squashed >/dev/null; tmux-clean >/dev/null; git worktree list)' \
-		--bind 'ctrl-o:execute(sesh connect {1})+abort' \
 		--bind 'ctrl-a:reload(git-worktree-add {q} >/dev/null 2>&1; git worktree list)' \
+		--bind 'enter:execute(sesh connect {1})+abort' \
 		--preview "
       git -c color.status=$(__fzf_git_color .) -C {1} status --short --branch
       echo
       git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' {2} --
-    " "$@" |
-		awk '{print $1}'
+    " "$@"
 }
 
 function y() {

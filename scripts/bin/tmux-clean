@@ -2,40 +2,40 @@
 # tmux-clean - Kill tmux sessions where the root directory doesn't exist
 
 main() {
-    # Check if tmux is running
-    if ! pgrep -x tmux > /dev/null; then
-        echo "No tmux server running"
-        exit 0
-    fi
+	# Check if tmux is running
+	if ! pgrep -x tmux >/dev/null; then
+		echo "No tmux server running"
+		exit 0
+	fi
 
-    # Get list of sessions
-    local sessions
-    sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
+	# Get list of sessions
+	local sessions
+	sessions=$(tmux list-sessions -F '#S' 2>/dev/null || true)
 
-    if [[ -z "$sessions" ]]; then
-        echo "No tmux sessions found"
-        exit 0
-    fi
+	if [[ -z "$sessions" ]]; then
+		echo "No tmux sessions found"
+		exit 0
+	fi
 
-    local killed_count=0
+	local killed_count=0
 
-    # Process each session
-    while IFS= read -r session; do
-        [[ -z "$session" ]] && continue
+	# Process each session
+	while IFS= read -r session; do
+		[[ -z "$session" ]] && continue
 
-        # Get the session's working directory
-        local session_dir
-        session_dir=$(tmux display-message -t "$session" -p '#{session_path}' 2>/dev/null || echo "")
+		# Get the session's working directory
+		local session_dir
+		session_dir=$(tmux display-message -t "$session" -p '#{session_path}' 2>/dev/null || echo "")
 
-        # Kill if directory doesn't exist
-        if [[ -z "$session_dir" ]] || [[ ! -d "$session_dir" ]]; then
-            echo "Killing session '$session' - directory '$session_dir' doesn't exist"
-            tmux kill-session -t "$session" 2>/dev/null || echo "Failed to kill session '$session'"
-            ((killed_count++))
-        fi
-    done <<< "$sessions"
+		# Kill if directory doesn't exist
+		if [[ -z "$session_dir" ]] || [[ ! -d "$session_dir" ]]; then
+			echo "Killing session '$session' - directory '$session_dir' doesn't exist"
+			tmux kill-session -t "$session" 2>/dev/null || echo "Failed to kill session '$session'"
+			((killed_count++))
+		fi
+	done <<<"$sessions"
 
-    echo "Killed $killed_count orphaned sessions"
+	echo "Killed $killed_count orphaned sessions"
 }
 
 main "$@"
