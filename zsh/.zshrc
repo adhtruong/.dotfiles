@@ -33,6 +33,8 @@ zstyle ':omz:update' mode disabled # disable automatic updates
 # zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
+
 # Uncomment the following line to change how often to auto-update (in days).
 # zstyle ':omz:update' frequency 13
 
@@ -195,42 +197,14 @@ if [[ -e "${TARGET_ENV}/bin/activate" ]]; then
 	source "${TARGET_ENV}/bin/activate"
 fi
 
-# Create a new git worktree relative to repository root
-function git_worktree_add() {
-	local branch_name="$1"
-	local repo_root
-	repo_root=$(git rev-parse --show-toplevel)
-	local worktree_path="$repo_root-features/$branch_name"
-
-	if [[ -z "$branch_name" ]]; then
-		echo "Branch name cannot be empty"
-		return 1
-	fi
-
-	# Check if worktree path already exists
-	if [[ -d "$worktree_path" ]]; then
-		echo "Worktree directory '$worktree_path' already exists"
-		return 1
-	fi
-
-	# Create the worktree
-	git worktree add "$worktree_path" "$branch_name" >/dev/null 2>&1
-
-	if [[ $? -eq 0 ]]; then
-		echo "Created worktree '$branch_name' at $worktree_path"
-	else
-		echo "Failed to create worktree '$branch_name'"
-		return 1
-	fi
-}
-
 _fzf_git_worktrees() {
 	_fzf_git_check || return
 	git worktree list | _fzf_git_fzf \
 		--border-label '🌴 Worktrees ' \
 		--header 'CTRL-X (remove worktree) : CTRL-O (open) : CTRL+A (add)' \
-		--bind 'ctrl-x:reload(git worktree remove {1} > /dev/null; git worktree list)' \
+		--bind 'ctrl-x:reload(git worktree remove {1} >/dev/null; git delete-squashed >/dev/null; tmux-clean >/dev/null; git worktree list)' \
 		--bind 'ctrl-o:execute(sesh connect {1})+abort' \
+		--bind 'ctrl-a:reload(git-worktree-add {q} >/dev/null 2>&1; git worktree list)' \
 		--preview "
       git -c color.status=$(__fzf_git_color .) -C {1} status --short --branch
       echo
