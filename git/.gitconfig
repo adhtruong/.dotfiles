@@ -4,9 +4,11 @@
 insteadOf = https://github.com/
 
 [alias]
-	# https://github.com/not-an-aardvark/git-delete-squashed
-	delete-squashed = "!f() { local targetBranch=${1:-main} && git checkout -q $targetBranch && git branch --merged | grep -v \"\\*\" | xargs -n 1 git branch -d && git for-each-ref refs/heads/ \"--format=%(refname:short)\" | while read branch; do mergeBase=$(git merge-base $targetBranch $branch) && [[ $(git cherry $targetBranch $(git commit-tree $(git rev-parse $branch^{tree}) -p $mergeBase -m _)) == \"-\"* ]] && git branch -D $branch; done; }; f"
-	undo = reset --soft HEAD^
+  # https://stackoverflow.com/a/44750379
+	default-branch = !git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | xargs basename
+  # https://github.com/not-an-aardvark/git-delete-squashed
+  delete-squashed = "!f() { local targetBranch=${1:-$(git default-branch)} && git checkout -q $targetBranch && git branch --merged | grep -v \"\\*\" | xargs -n 1 git branch -d && git for-each-ref refs/heads/ \"--format=%(refname:short)\" | while read branch; do mergeBase=$(git merge-base $targetBranch $branch) && [[ $(git cherry $targetBranch $(git commit-tree $(git rev-parse $branch^{tree}) -p $mergeBase -m _)) == \"-\"* ]] && git branch -D $branch; done; }; f"
+  undo = reset --soft HEAD^
 
 	comit = commit      # spellchecker:disable-line
 	commmit = commit    # spellchecker:disable-line
