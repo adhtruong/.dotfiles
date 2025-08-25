@@ -141,6 +141,16 @@ alias ga='git add'
 alias gc='git commit'
 alias gco='git checkout'
 alias gb='git branch'
+alias gp='git push'
+alias gu='git pull'
+
+git() {
+    if [ $# -eq 0 ]; then
+        command git status
+    else
+        command git "$@"
+    fi
+}
 
 # Required for project level session set up
 alias code='env -u TMUX -u VIRTUAL_ENV code'
