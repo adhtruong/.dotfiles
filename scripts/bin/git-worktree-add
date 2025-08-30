@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # Create a new git worktree relative to repository root
 
+set -euo pipefail
+
 function main() {
 	local branch_name="$1"
 	local repo_root
-	repo_root=$(git rev-parse --show-toplevel)
+	repo_root=$(git worktree list | head -1 | awk '{print $1}')
 	local worktree_path="$repo_root-features/$branch_name"
 
 	if [[ -z "$branch_name" ]]; then

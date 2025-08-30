@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+function main() {
+	if [ -z "${1:-}" ]; then
+		echo "No file or directory specified"
+		exit 1
+	fi
+
+	if [ -d "$1" ]; then
+		eza -a --git-ignore --tree --color=always "$1" | head -200
+	else
+		bat --color=always --style=-grid,numbers,changes "$1"
+	fi
+}
+
+main "$@"

@@ -96,7 +96,10 @@ source "$ZSH"/oh-my-zsh.sh
 
 # User configuration
 
+setopt glob_dots
 zstyle ':completion:*:*:make:*' tag-order 'targets'
+zstyle ':completion:*' ignored-patterns '.git' 'node_modules'
+zstyle ':completion:*' special-dirs false
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
@@ -143,13 +146,14 @@ alias gco='git checkout'
 alias gb='git branch'
 alias gp='git push'
 alias gu='git pull'
+alias gd='git diff'
 
 git() {
-    if [ $# -eq 0 ]; then
-        command git status
-    else
-        command git "$@"
-    fi
+	if [ $# -eq 0 ]; then
+		command git status
+	else
+		command git "$@"
+	fi
 }
 
 # Required for project level session set up
@@ -161,12 +165,14 @@ alias cursor='env -u TMUX -u VIRTUAL_ENV cursor'
 FZF_ALT_C_COMMAND='' source <(fzf --zsh)
 
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
-export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=reverse --border --margin=1 --padding=1"
+export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=reverse --border --margin=1 --padding=1 \
+    --bind 'ctrl-u:preview-page-up' \
+    --bind 'ctrl-d:preview-page-down'"
 
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_COMMAND="fd --strip-cwd-prefix --hidden --follow --exclude .git"
 export FZF_CTRL_T_OPTS="
   --walker-skip .git,node_modules,target
-  --preview 'bat -n --color=always {}'
+  --preview 'fzf-preview {}'
   --bind 'ctrl-/:change-preview-window(down|hidden|)'"
 bindkey "^u" kill-whole-line
 bindkey "^f" forward-word

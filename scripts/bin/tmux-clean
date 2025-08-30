@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # tmux-clean - Kill tmux sessions where the root directory doesn't exist
 
+set -euo pipefail
+
 main() {
 	# Check if tmux is running
 	if ! pgrep -x tmux >/dev/null; then

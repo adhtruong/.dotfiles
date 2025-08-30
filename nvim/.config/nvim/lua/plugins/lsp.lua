@@ -5,4 +5,7 @@ return {
     -- Disable the K key for hover
     keys[#keys + 1] = { "K", false }
   end,
+  opts = {
+    inlay_hints = { enabled = false },
+  },
 }
