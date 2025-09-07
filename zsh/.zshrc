@@ -166,8 +166,9 @@ FZF_ALT_C_COMMAND='' source <(fzf --zsh)
 
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=reverse --border --margin=1 --padding=1 \
-    --bind 'ctrl-u:preview-page-up' \
-    --bind 'ctrl-d:preview-page-down'"
+    --bind 'ctrl-b:preview-page-up' \
+    --bind 'ctrl-d:preview-page-down' \
+    --bind 'ctrl-f:preview-page-down'"
 
 export FZF_CTRL_T_COMMAND="fd --strip-cwd-prefix --hidden --follow --exclude .git"
 export FZF_CTRL_T_OPTS="
