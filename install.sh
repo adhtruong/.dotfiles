@@ -1,9 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 set -euo pipefail
 
 ZSH="$HOME/.oh-my-zsh"
 ZSH_CUSTOM_PLUGINS="$ZSH/custom/plugins"
+ZSH_COMPLETIONS="$HOME/.zfunc"
 
 [[ ! -d $ZSH ]] && RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --keep-zshrc
 
@@ -24,4 +25,15 @@ for plugin in "${plugins[@]}"; do
 	fi
 done
 
+function generate_completions() {
+	mkdir -p "$ZSH_COMPLETIONS"
+
+	uv generate-shell-completion zsh >"$ZSH_COMPLETIONS/_uv"
+	uvx --generate-shell-completion zsh >"$ZSH_COMPLETIONS/_uvx"
+	uvx ruff generate-shell-completion zsh >"$ZSH_COMPLETIONS/_ruff"
+
+	autoload -Uz compinit && compinit
+}
+
+generate_completions
 zsh

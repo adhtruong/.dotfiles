@@ -197,9 +197,6 @@ source "$ZSH_CUSTOM"/plugins/fzf-git.sh/fzf-git.sh
 
 eval "$(zoxide init zsh --cmd cd)"
 
-eval "$(uv generate-shell-completion zsh)"
-eval "$(uvx --generate-shell-completion zsh)"
-
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
 	session_name="default"
 	if [[ "$PWD" != "$HOME" ]]; then
