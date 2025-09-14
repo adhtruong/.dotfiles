@@ -1,3 +1,5 @@
+default_stages: [pre-commit]
+default_install_hook_types: [pre-commit, commit-msg]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -14,6 +16,10 @@ repos:
     rev: v1.36.2
     hooks:
       - id: typos
+      - id: typos
+        name: commit-msg-typos
+        stages: [commit-msg]
+        args: []
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.12.0-2
     hooks:
