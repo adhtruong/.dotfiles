@@ -30,6 +30,6 @@ repos:
       - id: shfmt
         args: ["-i", "0"]
   - repo: https://github.com/biomejs/pre-commit
-    rev: v2.2.3
+    rev: v2.2.4
     hooks:
       - id: biome-check

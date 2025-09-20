@@ -15,10 +15,10 @@ Configuration included:
 Requires `brew`
 
 ```bash
-./install.sh
+./install
 make all
 ./obsidian/sync.sh import
-./preferences import
+./preferences/defaults.sh import
 ```
 
 ## Local Configuration

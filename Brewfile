@@ -26,6 +26,7 @@ brew "git"
 brew "git-lfs"
 brew "glslviewer"
 brew "go"
+brew "gron"
 brew "htop"
 brew "jq"
 brew "libpq", link: true
