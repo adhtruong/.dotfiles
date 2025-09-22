@@ -117,7 +117,9 @@ shift-l = 'move right'
 # Resize with minus/equal
 minus = 'resize smart -50'
 equal = 'resize smart +50'
-ctrl-space = 'balance-sizes'
+
+shift-leftSquareBracket = ['move left', 'move left']
+shift-rightSquareBracket = ['move right', 'move right']
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 slash = 'layout tiles horizontal vertical'
@@ -126,13 +128,18 @@ comma = 'layout accordion horizontal vertical'
 m = ['fullscreen']
 
 o = ['focus-back-and-forth']
-r = ['flatten-workspace-tree', 'mode main'] # reset layout (like vim's :r)
-f = [
-  'layout floating tiling',
+r = [
+  'flatten-workspace-tree',
+  'layout accordion horizontal',
   'mode main',
-] # Toggle between floating and tiling layout (like vim's :f)
+] # reset layout (like vim's :r)
+# f = [
+#   'layout floating tiling',
+#   'mode main',
+# ] # Toggle between floating and tiling layout (like vim's :f)
 
 v = [
+  'layout accordion horizontal',
   'move down',
   'move-mouse window-lazy-center',
   'layout tiles horizontal',
@@ -140,16 +147,17 @@ v = [
   'mode main',
 ]
 s = [
+  'layout accordion vertical',
   'move right',
   'layout tiles vertical',
   'move-mouse window-force-center',
   'mode main',
 ]
 
-p = ['focus-monitor prev', 'move-mouse window-force-center']
-n = ['focus-monitor next', 'move-mouse window-force-center']
-shift-p = 'move-workspace-to-monitor prev'
-shift-n = 'move-workspace-to-monitor next'
+p = ['workspace --wrap-around prev', 'move-mouse window-force-center']
+n = ['workspace --wrap-around next', 'move-mouse window-force-center']
+shift-p = ['move-node-to-workspace --wrap-around --focus-follows-window prev']
+shift-n = ['move-node-to-workspace --wrap-around --focus-follows-window next']
 
 # Workspace controls
 tab = 'workspace-back-and-forth'
@@ -157,7 +165,7 @@ shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # Return to main
 esc = 'mode main'
-
+enter = 'mode main'
 
 [mode.service.binding]
 # Vim-like service mode bindings
