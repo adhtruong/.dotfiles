@@ -52,6 +52,10 @@ const applicationManipulators = [
     "https://www.google.com/search?q=stopwatch",
     "https://www.google.com/search?q=timer"
   ),
+  map("b").to$(
+    "open -g raycast://extensions/Codely/google-chrome/search-bookmarks"
+  ),
+  mapToLink("'", "https://claude.ai"),
 
   doubleTap("p")
     .to(
@@ -60,6 +64,50 @@ const applicationManipulators = [
     .singleTap(
       to$("open raycast://extensions/thomas/visual-studio-code/index")
     ),
+];
+
+const finderLayer = [
+  map("j").to({ key_code: "tab", modifiers: ["right_command"] }),
+  map("k").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+  map("n").to({
+    key_code: "grave_accent_and_tilde",
+    modifiers: ["right_command"],
+  }),
+  map("p").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+
+  map("h").to(toSwitchWindow("left")),
+  map("l").to(toSwitchWindow("right")),
+
+  map("o").toAfterKeyUp([
+    {
+      key_code: "tab",
+      modifiers: ["right_command"],
+      hold_down_milliseconds: 20,
+    },
+    { key_code: "vk_none" },
+  ]),
+  map("i").toAfterKeyUp([
+    {
+      key_code: "grave_accent_and_tilde",
+      modifiers: ["right_command"],
+      hold_down_milliseconds: 20,
+    },
+    { key_code: "vk_none" },
+  ]),
+
+  doubleTap("u")
+    .to({
+      key_code: "q",
+      modifiers: ["right_command"],
+    })
+    .singleTap({
+      key_code: "w",
+      modifiers: ["right_command"],
+    }),
+  map("right_shift").to({
+    key_code: "escape",
+    modifiers: ["right_command"],
+  }),
 ];
 
 const rules = [
@@ -101,6 +149,7 @@ const rules = [
     rectangle("h", "left-half"),
     rectangle("l", "right-half"),
     rectangle("return_or_enter", "maximize"),
+    rectangle("m", "maximize"),
     rectangle("o", "restore"),
 
     rectangle("n", "next-display"),
@@ -109,50 +158,7 @@ const rules = [
 
   ...createVimLayer(),
 
-  createLayer("f").manipulators([
-    map("j").to({ key_code: "tab", modifiers: ["right_command"] }),
-    map("k").to({ key_code: "left_shift", modifiers: ["right_command"] }),
-
-    map("n").to({
-      key_code: "grave_accent_and_tilde",
-      modifiers: ["right_command"],
-    }),
-    map("p").to({ key_code: "left_shift", modifiers: ["right_command"] }),
-
-    map("h").to(toSwitchWindow("left")),
-    map("l").to(toSwitchWindow("right")),
-
-    map("o").toAfterKeyUp([
-      {
-        key_code: "tab",
-        modifiers: ["right_command"],
-        hold_down_milliseconds: 20,
-      },
-      { key_code: "vk_none" },
-    ]),
-    map("i").toAfterKeyUp([
-      {
-        key_code: "grave_accent_and_tilde",
-        modifiers: ["right_command"],
-        hold_down_milliseconds: 20,
-      },
-      { key_code: "vk_none" },
-    ]),
-
-    doubleTap("u")
-      .to({
-        key_code: "q",
-        modifiers: ["right_command"],
-      })
-      .singleTap({
-        key_code: "w",
-        modifiers: ["right_command"],
-      }),
-    map("right_shift").to({
-      key_code: "escape",
-      modifiers: ["right_command"],
-    }),
-  ]),
+  createLayer("f").manipulators(finderLayer),
 
   rule("Ghostty remap window commands to tmux", ifApp("ghostty")).manipulators([
     map("t", "command").toTypeSequence("`c"),
