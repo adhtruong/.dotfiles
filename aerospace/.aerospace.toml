@@ -52,12 +52,12 @@ preset = 'qwerty'
 #                 See:
 #                 https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
-inner.horizontal = 0
-inner.vertical = 0
-outer.left = 0
-outer.bottom = 0
-outer.top = 0
-outer.right = 0
+inner.horizontal = 2
+inner.vertical = 2
+outer.left = 2
+outer.bottom = 2
+outer.top = 2
+outer.right = 2
 
 # 'main' binding mode declaration
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -97,11 +97,23 @@ alt-slash = 'layout tiles horizontal vertical'
 alt-comma = 'layout accordion horizontal vertical'
 
 # Mode entry bindings (keep main slim)
-ctrl-space = 'mode nav'
+ctrl-space = [
+  'mode nav',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight show',
+]
 alt-r = 'mode resize'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = 'mode service'
+
+alt-h = 'focus left'
+alt-j = 'focus down'
+alt-k = 'focus up'
+alt-l = 'focus right'
+alt-shift-h = 'move left'
+alt-shift-j = 'move down'
+alt-shift-k = 'move up'
+alt-shift-l = 'move right'
 
 [mode.nav.binding]
 # Focus with h/j/k/l; hold shift to move
@@ -128,7 +140,9 @@ shift-rightSquareBracket = ['move right', 'move right']
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 slash = 'layout tiles horizontal vertical'
+shift-semicolon = 'layout tiles horizontal vertical'
 comma = 'layout accordion horizontal vertical'
+semicolon = 'layout accordion horizontal vertical'
 
 m = ['fullscreen']
 
@@ -137,6 +151,7 @@ r = [
   'flatten-workspace-tree',
   'layout accordion horizontal',
   'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
 ] # reset layout (like vim's :r)
 # f = [
 #   'layout floating tiling',
@@ -150,6 +165,7 @@ v = [
   'layout tiles horizontal',
   'move-mouse window-lazy-center',
   'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
 ]
 shift-v = [
   'layout accordion horizontal',
@@ -160,6 +176,7 @@ shift-v = [
   'move left',
   'move left',
   'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
 ]
 s = [
   'layout accordion vertical',
@@ -167,6 +184,7 @@ s = [
   'layout tiles vertical',
   'move-mouse window-force-center',
   'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
 ]
 
 p = ['workspace --wrap-around prev', 'move-mouse window-force-center']
@@ -179,27 +197,58 @@ tab = 'workspace-back-and-forth'
 shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # Return to main
-esc = 'mode main'
-enter = 'mode main'
+esc = [
+  'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
+]
+enter = [
+  'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
+]
 
 [mode.service.binding]
 # Vim-like service mode bindings
-r = ['flatten-workspace-tree', 'mode main'] # reset layout (like vim's :r)
+r = [
+  'flatten-workspace-tree',
+  'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
+] # reset layout (like vim's :r)
 f = [
   'layout floating tiling',
   'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
 ] # Toggle between floating and tiling layout (like vim's :f)
 backspace = [
   'close-all-windows-but-current',
   'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
 ] # close all but current
 
 # Vim-like join operations
-shift-h = ['join-with left', 'mode main']
-shift-j = ['join-with down', 'mode main']
-shift-k = ['join-with up', 'mode main']
-shift-l = ['join-with right', 'mode main']
+shift-h = [
+  'join-with left',
+  'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
+]
+shift-j = [
+  'join-with down',
+  'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
+]
+shift-k = [
+  'join-with up',
+  'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
+]
+shift-l = [
+  'join-with right',
+  'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
+]
 
 # Additional vim-like shortcuts
 # Escape to return to main mode
-esc = 'mode main'
+esc = [
+  'mode main',
+  'exec-and-forget ~/.dotfiles/aerospace/border-highlight hide',
+]
