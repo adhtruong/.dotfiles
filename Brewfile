@@ -29,6 +29,7 @@ brew "go"
 brew "gron"
 brew "htop"
 brew "jq"
+brew "lazygit"
 brew "libpq", link: true
 brew "markdown-oxide"
 brew "neovim"

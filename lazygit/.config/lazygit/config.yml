@@ -1,0 +1,5 @@
+os:
+  editPreset: 'nvim'
+
+promptToReturnFromSubprocess: false
+quitOnTopLevelReturn: true

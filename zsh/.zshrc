@@ -111,6 +111,7 @@ if [[ -n $SSH_CONNECTION ]]; then
 else
 	export EDITOR='nvim'
 fi
+export XDG_CONFIG_HOME="$HOME/.config"
 
 unsetopt BEEP
 
@@ -155,6 +156,9 @@ git() {
 		command git "$@"
 	fi
 }
+
+alias lg='lazygit'
+bindkey -s '^G' 'lazygit\n'
 
 # Required for project level session set up
 alias code='env -u TMUX -u VIRTUAL_ENV code'
