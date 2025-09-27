@@ -114,6 +114,11 @@ shift-j = 'move down'
 shift-k = 'move up'
 shift-l = 'move right'
 
+ctrl-h = 'join-with left'
+ctrl-j = 'join-with down'
+ctrl-k = 'join-with up'
+ctrl-l = 'join-with right'
+
 # Resize with minus/equal
 minus = 'resize smart -50'
 equal = 'resize smart +50'
@@ -144,6 +149,16 @@ v = [
   'move-mouse window-lazy-center',
   'layout tiles horizontal',
   'move-mouse window-lazy-center',
+  'mode main',
+]
+shift-v = [
+  'layout accordion horizontal',
+  'move down',
+  'move-mouse window-lazy-center',
+  'layout tiles horizontal',
+  'move-mouse window-lazy-center',
+  'move left',
+  'move left',
   'mode main',
 ]
 s = [
