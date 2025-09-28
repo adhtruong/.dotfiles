@@ -83,4 +83,3 @@ nmap zR :unfoldall<CR>
 
 exmap foldall obcommand editor:fold-all
 nmap zM :foldall<CR>
-
