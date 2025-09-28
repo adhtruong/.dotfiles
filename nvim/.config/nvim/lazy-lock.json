@@ -51,6 +51,10 @@
     "branch": "main",
     "commit": "2367a6c0a01eb9edb0464731cc0fb61ed9ab9d2c"
   },
+  "lazygit.nvim": {
+    "branch": "main",
+    "commit": "2305deed25bc61b866d5d39189e9105a45cf1cfb"
+  },
   "lualine.nvim": {
     "branch": "master",
     "commit": "b8c23159c0161f4b89196f74ee3a6d02cdc3a955"
