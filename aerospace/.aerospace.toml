@@ -141,8 +141,12 @@ shift-rightSquareBracket = ['move right', 'move right']
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 slash = 'layout tiles horizontal vertical'
 shift-semicolon = 'layout tiles horizontal vertical'
+shift-space = 'layout tiles horizontal vertical'
+shift-e = 'layout tiles horizontal vertical'
 comma = 'layout accordion horizontal vertical'
 semicolon = 'layout accordion horizontal vertical'
+space = 'layout accordion horizontal vertical'
+e = 'layout accordion horizontal vertical'
 
 m = ['fullscreen']
 

@@ -31,6 +31,7 @@ function generate_completions() {
 	uv generate-shell-completion zsh >"$ZSH_COMPLETIONS/_uv"
 	uvx --generate-shell-completion zsh >"$ZSH_COMPLETIONS/_uvx"
 	uvx ruff generate-shell-completion zsh >"$ZSH_COMPLETIONS/_ruff"
+	sesh completion zsh >"$ZSH_COMPLETIONS/_sesh"
 
 	autoload -Uz compinit && compinit
 }

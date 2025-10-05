@@ -160,12 +160,6 @@ const rules = [
 
   createLayer("f").manipulators(finderLayer),
 
-  rule("Ghostty remap window commands to tmux", ifApp("ghostty")).manipulators([
-    map("t", "command").toTypeSequence("`c"),
-    map("w", "command").toTypeSequence("`x"),
-    map("n", "command").toTypeSequence("`t"),
-  ]),
-
   rule(
     "Chrome: Change ctrl+np to arrow keys",
     ifApp(["Chrome", "slack"])
