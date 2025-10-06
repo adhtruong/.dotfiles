@@ -221,10 +221,17 @@ fi
 
 _fzf_git_worktrees() {
 	_fzf_git_check || return
+	local remove_cmd='
+		[[ "$(pwd)" == {1}* ]] && cd "$(git worktree list | head -1 | awk '\''{print $1}'\'')";
+		git worktree remove -f {1};
+		git delete-squashed >/dev/null;
+		tmux-clean >/dev/null;
+		git worktree list
+	'
 	git worktree list | _fzf_git_fzf \
 		--border-label '🌴 Worktrees ' \
 		--header 'CTRL-X (remove worktree) : CTRL+A (add) : ENTER (open sesh)' \
-		--bind 'ctrl-x:reload(git worktree remove {1} >/dev/null; git delete-squashed >/dev/null; tmux-clean >/dev/null; git worktree list)' \
+		--bind "ctrl-x:reload($remove_cmd)" \
 		--bind 'ctrl-a:reload(git-worktree-add {q} >/dev/null 2>&1; git worktree list)' \
 		--bind 'enter:execute(sesh connect {1})+abort' \
 		--preview "
