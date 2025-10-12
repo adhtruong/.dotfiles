@@ -14,7 +14,7 @@ repos:
       - id: detect-private-key
       - id: check-merge-conflict
   - repo: https://github.com/adhtruong/mirrors-typos
-    rev: v1.36.3
+    rev: v1.38.1
     hooks:
       - id: typos
       - id: typos
@@ -31,6 +31,6 @@ repos:
       - id: shfmt
         args: ["-i", "0"]
   - repo: https://github.com/biomejs/pre-commit
-    rev: v2.2.4
+    rev: v2.2.5
     hooks:
       - id: biome-check
