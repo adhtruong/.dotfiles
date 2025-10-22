@@ -1,5 +1,17 @@
+notARepository: 'quit'
 os:
   editPreset: 'nvim'
 
 promptToReturnFromSubprocess: false
 quitOnTopLevelReturn: true
+
+customCommands:
+  - key: '<c-g>'
+    command: 'gh dash'
+    context: 'global'
+    description: 'GitHub Dashboard'
+    output: terminal
+  - key: '@'
+    command: 'gh pr view --web'
+    context: 'localBranches'
+    description: 'View PR'

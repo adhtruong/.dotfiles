@@ -8,7 +8,7 @@ sesh connect "$(
 		--no-sort --border-label ' sesh ' --prompt '⚡  ' \
 		--header '  ^a all ^t tmux ^x zoxide ^d tmux kill ^f find ^w worktrees' \
 		--preview 'sesh preview {}' \
-		--preview-window='right:60%' \
+		--preview-window='right:50%' \
 		--bind 'tab:down,btab:up' \
 		--bind 'ctrl-a:change-prompt(⚡  )+reload(sesh list --icons)' \
 		--bind 'ctrl-t:change-prompt(🪟  )+reload(sesh list -t --icons)' \
