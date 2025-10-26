@@ -6,7 +6,8 @@
     "useIgnoreFile": false
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": ["**", "!nvim/.config/nvim/lazy-lock.json"]
   },
   "formatter": {
     "enabled": true,
