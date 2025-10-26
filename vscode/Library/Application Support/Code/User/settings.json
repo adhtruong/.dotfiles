@@ -54,6 +54,10 @@
     "editor.formatOnType": true,
     "editor.defaultFormatter": "charliermarsh.ruff"
   },
+  "basedpyright.analysis.inlayHints.callArgumentNames": false,
+  "basedpyright.analysis.inlayHints.functionReturnTypes": false,
+  "basedpyright.analysis.inlayHints.variableTypes": false,
+
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "explicit"
   },
