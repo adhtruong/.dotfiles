@@ -1,60 +1,64 @@
-#!/usr/bin/env osascript
+#!/usr/bin/env osascript -l JavaScript
 
-on run argv
-    if (count of argv) = 0 then
-        return 1
-    end if
+function run(argv) {
+    if (argv.length === 0) {
+        return 1;
+    }
 
-    tell application "System Events"
-        # Check if Raycast is running and has windows
-        if exists (processes whose name is "Raycast") then
-            tell process "Raycast"
-                # Try to close any visible windows
-                if exists window 1 then
-                    # Press Escape to dismiss the popup
-                    key code 53
-                end if
-            end tell
-        end if
-    end tell
+    const searchTerms = argv.map(term => term.toLowerCase());
 
-    set searchTerms to items of argv -- Get all search terms from arguments
+    // Close Raycast if it's open
+    const systemEvents = Application('System Events');
+    const raycastProcesses = systemEvents.processes.whose({ name: 'Raycast' });
+    if (raycastProcesses.length > 0) {
+        const raycast = raycastProcesses[0];
+        if (raycast.windows.length > 0) {
+            systemEvents.keyCode(53); // Escape key
+        }
+    }
 
-    tell application "Google Chrome"
-        try
-            set windowList to windows
+    const chrome = Application('Google Chrome');
+    chrome.includeStandardAdditions = true;
 
-            -- Iterate through all provided search terms
-            repeat with searchTerm in searchTerms
-                repeat with w in windowList
-                    set tabList to tabs of w
-                    set tabIndex to 0
+    try {
+        const windows = chrome.windows();
 
-                    repeat with t in tabList
-                        set tabIndex to tabIndex + 1
-                        set tabTitle to (title of t) as string
-                        set tabUrl to (URL of t) as string
+        // Search through all tabs
+        for (let windowIndex = 0; windowIndex < windows.length; windowIndex++) {
+            const win = windows[windowIndex];
+            const tabs = win.tabs();
 
-                        if searchTerm is in tabTitle or searchTerm is in tabUrl then
-                            -- Activate Chrome and bring window to front
-                            activate
-                            set visible of w to true
+            for (let tabIndex = 0; tabIndex < tabs.length; tabIndex++) {
+                const tab = tabs[tabIndex];
+                const title = tab.title().toLowerCase();
 
-                            -- Switch to the tab
-                            set active tab index of w to tabIndex
+                // Check title first (faster)
+                const titleMatch = searchTerms.find(term => title.includes(term));
+                if (titleMatch) {
+                    chrome.activate();
+                    win.index = 1; // Bring window to front
+                    win.activeTabIndex = tabIndex + 1; // AppleScript uses 1-based indexing
+                    return `Opening: ${tab.title()}`;
+                }
 
-                            return "Opening: " & tabTitle
-                        end if
-                    end repeat
-                end repeat
-            end repeat
+                // Only check URL if title didn't match
+                const url = tab.url().toLowerCase();
+                const urlMatch = searchTerms.find(term => url.includes(term));
+                if (urlMatch) {
+                    chrome.activate();
+                    win.index = 1;
+                    win.activeTabIndex = tabIndex + 1;
+                    return `Opening: ${tab.title()}`;
+                }
+            }
+        }
 
-            -- If no match found for any term, open the first term as a URL
-            open location item 1 of searchTerms
-            activate
-            return "No matches found. Opening: " & item 1 of searchTerms
-        on error errMsg
-            return "Error: " & errMsg
-        end try
-    end tell
-end run
+        // No match found, open first search term as URL
+        chrome.openLocation(argv[0]);
+        chrome.activate();
+        return `No matches found. Opening: ${argv[0]}`;
+
+    } catch (error) {
+        return `Error: ${error.message}`;
+    }
+}
