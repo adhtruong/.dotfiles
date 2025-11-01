@@ -15,6 +15,9 @@
   "[json]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -43,9 +46,7 @@
   "[yaml]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[jsonc]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
+
   "[python]": {
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
@@ -57,6 +58,7 @@
   "basedpyright.analysis.inlayHints.callArgumentNames": false,
   "basedpyright.analysis.inlayHints.functionReturnTypes": false,
   "basedpyright.analysis.inlayHints.variableTypes": false,
+  "basedpyright.analysis.typeCheckingMode": "standard",
 
   "editor.codeActionsOnSave": {
     "source.fixAll.biome": "explicit"
@@ -219,7 +221,7 @@
     "editor.defaultFormatter": "tamasfe.even-better-toml"
   },
   "[shellscript]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
+    "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
   },
 
   "shellformat.flag": "-i 0"

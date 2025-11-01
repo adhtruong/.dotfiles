@@ -19,7 +19,7 @@ for plugin in "${plugins[@]}"; do
 	echo "Installing $plugin"
 	directory="$ZSH_CUSTOM_PLUGINS/$(basename "$plugin" .git)"
 	if [ -d "$directory" ]; then
-		(cd "$directory" && git pull)
+		(cd "$directory" && git pull origin HEAD)
 	else
 		git clone "$plugin" "$directory"
 	fi
