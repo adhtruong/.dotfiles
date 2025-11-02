@@ -10,12 +10,16 @@ fpath+=~/.zfunc
 autoload -Uz compinit
 if [ ! -f ~/.zcompdump ] || [ "$(find ~/.zcompdump -mtime +1 2>/dev/null)" ]; then
 	compinit
+else
+	compinit -C
 fi
 
 source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
 antidote load ~/.zsh_plugins.txt
 
 # User configuration
+
+bindkey -v
 
 setopt glob_dots
 zstyle ':completion:*:*:make:*' tag-order 'targets'
@@ -47,6 +51,12 @@ alias vim=nvim
 alias gitroot='cd $(git rev-parse --show-toplevel)'
 alias tmuxroot='cd $(tmux display-message -p -F "#{session_path}")'
 alias root='cd $(tmux display-message -p -F "#{session_path}")'
+
+alias l='ls -lah'
+alias la='ls -lAh'
+alias ll='ls -lh'
+alias ls='ls -G'
+alias lsa='ls -lah'
 
 alias g='git'
 alias gs='git status'
