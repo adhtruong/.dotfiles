@@ -2,6 +2,7 @@
 # Order matters: fzf-tab must come after compinit
 # syntax-highlighting should be last
 
+mattmc3/ez-compinit kind:defer
 ohmyzsh/ohmyzsh path:plugins/vi-mode
 ohmyzsh/ohmyzsh path:plugins/pyenv-lazy kind:defer
 ohmyzsh/ohmyzsh path:plugins/aliases kind:defer

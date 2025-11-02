@@ -7,12 +7,6 @@ fi
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 fpath+=~/.zfunc
-autoload -Uz compinit
-if [ ! -f ~/.zcompdump ] || [ "$(find ~/.zcompdump -mtime +1 2>/dev/null)" ]; then
-	compinit
-else
-	compinit -C
-fi
 
 source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
 antidote load ~/.zsh_plugins.txt
@@ -20,6 +14,26 @@ antidote load ~/.zsh_plugins.txt
 # User configuration
 
 bindkey -v
+
+# Make ESC switch to vi command mode instantly
+bindkey -M viins '^[' vi-cmd-mode
+
+# Vi mode clipboard integration
+vi-yank-to-clipboard() {
+	zle vi-yank
+	echo -n "$CUTBUFFER" | pbcopy
+}
+zle -N vi-yank-to-clipboard
+
+vi-paste-from-clipboard() {
+	CUTBUFFER=$(pbpaste)
+	zle vi-put-after
+}
+zle -N vi-paste-from-clipboard
+
+bindkey -M vicmd 'y' vi-yank-to-clipboard
+bindkey -M vicmd 'p' vi-paste-from-clipboard
+bindkey -M viins '^V' vi-paste-from-clipboard
 
 setopt glob_dots
 zstyle ':completion:*:*:make:*' tag-order 'targets'
@@ -118,7 +132,7 @@ _fzf_compgen_dir() {
 	fd --type=d --hidden --exclude .git . "$1"
 }
 
-eval "$(zoxide init zsh --cmd cd)"
+zsh-defer zoxide init zsh --cmd cd
 
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
 	session_name="default"
