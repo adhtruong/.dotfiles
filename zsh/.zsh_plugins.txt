@@ -1,0 +1,12 @@
+# ZSH Plugins managed by Antidote
+# Order matters: fzf-tab must come after compinit
+# syntax-highlighting should be last
+
+ohmyzsh/ohmyzsh path:plugins/vi-mode
+ohmyzsh/ohmyzsh path:plugins/pyenv-lazy kind:defer
+ohmyzsh/ohmyzsh path:plugins/aliases kind:defer
+Aloxaf/fzf-tab kind:defer
+junegunn/fzf-git.sh kind:defer
+zsh-users/zsh-autosuggestions kind:defer
+zsh-users/zsh-completions kind:defer
+zsh-users/zsh-syntax-highlighting kind:defer
