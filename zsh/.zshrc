@@ -43,11 +43,11 @@ zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 # Check that the function `starship_zle-keymap-select()` is defined.
 # xref: https://github.com/starship/starship/issues/3418
-type starship_zle-keymap-select >/dev/null || \
-  {
-    eval "$(starship init zsh)"
-  }
-
+if [[ "${widgets[zle - keymap - select]#user:}" == "starship_zle-keymap-select" ||
+	"${widgets[zle - keymap - select]#user:}" == "starship_zle-keymap-select-wrapped" ]]; then
+	zle -N zle-keymap-select ""
+fi
+eval "$(starship init zsh)"
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -132,7 +132,7 @@ _fzf_compgen_dir() {
 	fd --type=d --hidden --exclude .git . "$1"
 }
 
-zsh-defer zoxide init zsh --cmd cd
+zsh-defer eval "$(zoxide init zsh --cmd cd)"
 
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
 	session_name="default"
@@ -148,27 +148,7 @@ if [[ -e "${TARGET_ENV}/bin/activate" ]]; then
 	source "${TARGET_ENV}/bin/activate"
 fi
 
-_fzf_git_worktrees() {
-	_fzf_git_check || return
-	local remove_cmd='
-		[[ "$(pwd)" == {1}* ]] && cd "$(git worktree list | head -1 | awk '\''{print $1}'\'')";
-		git worktree remove -f {1};
-		git delete-squashed >/dev/null;
-		tmux-clean >/dev/null;
-		git worktree list
-	'
-	git worktree list | _fzf_git_fzf \
-		--border-label '🌴 Worktrees ' \
-		--header 'CTRL-X (remove worktree) : CTRL+A (add) : ENTER (open sesh)' \
-		--bind "ctrl-x:reload($remove_cmd)" \
-		--bind 'ctrl-a:reload(git-worktree-add {q} >/dev/null 2>&1; git worktree list)' \
-		--bind 'enter:execute(sesh connect {1})+abort' \
-		--preview "
-      git -c color.status=$(__fzf_git_color .) -C {1} status --short --branch
-      echo
-      git log --oneline --graph --date=short --color=$(__fzf_git_color .) --pretty='format:%C(auto)%cd %h%d %s' {2} --
-    " "$@"
-}
+zsh-defer source ~/.dotfiles/zsh/fzf-git-overrides.zsh
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd

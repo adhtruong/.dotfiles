@@ -3,10 +3,12 @@
 
 add_newline = false
 
-format = """$python\
+format = """\
 $character\
+$python\
 $directory\
-$git_branch """
+$git_branch\
+"""
 
 [character]
 success_symbol = "[❯](bold green)"
@@ -22,7 +24,7 @@ truncate_to_repo = false
 
 [git_branch]
 style = "red bold"
-format = "[git:](blue bold)[\\(](blue bold)[$branch]($style)[\\)](blue bold)"
+format = "[git:](blue bold)[\\(](blue bold)[$branch]($style)[\\) ](blue bold)"
 
 [python]
 format = '[(\($virtualenv\) )]($style)'
