@@ -8,6 +8,11 @@ export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 fpath+=~/.zfunc
 
+# NVM configuration for zsh-nvm plugin
+export NVM_LAZY_LOAD=true
+export NVM_COMPLETION=true
+export NVM_AUTO_USE=true
+
 source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
 antidote load ~/.zsh_plugins.txt
 
