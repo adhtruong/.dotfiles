@@ -147,11 +147,7 @@ if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
 	tmux new -A -s "$session_name" && exit
 fi
 
-TARGET_ENV=${VIRTUAL_ENV:-.venv}
-if [[ -e "${TARGET_ENV}/bin/activate" ]]; then
-	# shellcheck source=/dev/null
-	source "${TARGET_ENV}/bin/activate"
-fi
+eval "$(mise activate zsh)"
 
 zsh-defer source ~/.dotfiles/zsh/fzf-git-overrides.zsh
 
