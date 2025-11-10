@@ -77,8 +77,11 @@ const finderLayer = [
   }),
   map("p").to({ key_code: "left_shift", modifiers: ["right_command"] }),
 
-  map("h").to(toSwitchWindow("left")),
-  map("l").to(toSwitchWindow("right")),
+  map("h").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+  map("l").to({
+    key_code: "grave_accent_and_tilde",
+    modifiers: ["right_command"],
+  }),
 
   map("o").toAfterKeyUp([
     {
