@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+
+# Focus the most recently used window of a specific app using AltTab
+# Usage: ./focus-app-last-window <app_name>
+
+set -euo pipefail
+
+ALTTAB_PATH="/Applications/AltTab.app/Contents/MacOS/AltTab"
+
+# Get window data from AltTab
+get_window_data() {
+	if ! "$ALTTAB_PATH" --detailed-list 2>/dev/null; then
+		echo "Error: Failed to get window data from AltTab" >&2
+		return 1
+	fi
+}
+
+# Find and focus the most recently used window of the specified app
+focus_app_last_window() {
+	local alttab_name="$1"
+	local bundle_name="$2"
+	local window_data
+	local current_window_id
+	local window_id
+	local window_count
+	local current_is_this_app
+
+	if ! window_data=$(get_window_data); then
+		echo "Error: Could not retrieve window data" >&2
+		return 1
+	fi
+
+	# Get current focused window ID (lowest lastFocusOrder)
+	current_window_id=$(echo "$window_data" | jq -r "
+		[.windows[] |
+		select(.isMinimized == false and .isHidden == false and (.spaceIndexes | length > 0))] |
+		sort_by(.lastFocusOrder) |
+		.[0].id // empty
+	")
+
+	# Get all windows for this app, sorted by lastFocusOrder (use AltTab name)
+	local app_windows
+	app_windows=$(echo "$window_data" | jq -r "
+		[.windows[] |
+		select(.isMinimized == false and .isHidden == false and (.spaceIndexes | length > 0)) |
+		select(.appName == \"$alttab_name\")] |
+		sort_by(.lastFocusOrder) |
+		.[] | .id
+	")
+
+	if [[ -z "$app_windows" ]]; then
+		# No existing window found, launch the app (use bundle name)
+		open -a "$bundle_name"
+		return 0
+	fi
+
+	# Convert to array
+	local -a windows_array
+	while IFS= read -r line; do
+		[[ -n "$line" ]] && windows_array+=("$line")
+	done <<<"$app_windows"
+	window_count=${#windows_array[@]}
+
+	# Check if current window is this app
+	current_is_this_app=false
+	for wid in "${windows_array[@]}"; do
+		if [[ "$wid" == "$current_window_id" ]]; then
+			current_is_this_app=true
+			break
+		fi
+	done
+
+	# If already on this app and multiple windows exist, cycle to next
+	if [[ "$current_is_this_app" == "true" ]] && [[ $window_count -gt 1 ]]; then
+		window_id="${windows_array[1]}" # Second window (next most recent)
+	else
+		window_id="${windows_array[0]}" # First window (most recent)
+	fi
+
+	# Focus the window
+	if "$ALTTAB_PATH" --focus="$window_id" 2>/dev/null; then
+		return 0
+	else
+		echo "Error: Failed to focus window $window_id for $bundle_name" >&2
+		return 1
+	fi
+}
+
+# Main execution
+main() {
+	local app_name="${1:-}"
+
+	if [[ -z "$app_name" ]]; then
+		echo "Usage: $0 <app_name>" >&2
+		exit 1
+	fi
+
+	# Check if AltTab is installed
+	if [[ ! -x "$ALTTAB_PATH" ]]; then
+		echo "Error: AltTab not found at $ALTTAB_PATH" >&2
+		exit 1
+	fi
+
+	# Check if jq is available
+	if ! command -v jq >/dev/null 2>&1; then
+		echo "Error: jq is required but not installed. Install with: brew install jq" >&2
+		exit 1
+	fi
+
+	# Map bundle name to AltTab display name if needed
+	local alttab_name="$app_name"
+	case "$app_name" in
+	"Visual Studio Code")
+		alttab_name="Code"
+		;;
+	esac
+
+	focus_app_last_window "$alttab_name" "$app_name"
+}
+
+main "$@"

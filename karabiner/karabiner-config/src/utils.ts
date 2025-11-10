@@ -16,6 +16,10 @@ export function toSwitchWindow(direction: "left" | "right") {
   return to$(`~/bin/focus-window ${direction}`);
 }
 
+export function toFocusApp(appName: string) {
+  return to$(`~/bin/focus-app-last-window '${appName}'`);
+}
+
 export function mapToLink(key: FromKeyParam, link: string, alias = "") {
   return map(key).to(toLink(link, alias));
 }

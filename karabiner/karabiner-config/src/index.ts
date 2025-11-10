@@ -4,7 +4,6 @@ import {
   map,
   rule,
   to$,
-  toApp,
   withCondition,
   writeToProfile,
 } from "karabiner.ts";
@@ -14,16 +13,19 @@ import {
   ifLayer,
   mapToLink,
   rectangle,
+  toFocusApp,
   toSwitchWindow,
 } from "./utils";
 import { createVimLayer } from "./vim-layer";
 
 const applicationManipulators = [
-  map("h").toApp("Obsidian"),
-  map("j").toApp("Google Chrome"),
-  map("k").toApp("Ghostty"),
-  doubleTap("l").toApp("Cursor").singleTap(toApp("Visual Studio Code")),
-  map(";").toApp("Slack"),
+  map("h").to(toFocusApp("Obsidian")),
+  map("j").to(toFocusApp("Google Chrome")),
+  map("k").to(toFocusApp("Ghostty")),
+  doubleTap("l")
+    .to(toFocusApp("Cursor"))
+    .singleTap(toFocusApp("Visual Studio Code")),
+  map(";").to(toFocusApp("Slack")),
 
   map("o").toAfterKeyUp([
     {
