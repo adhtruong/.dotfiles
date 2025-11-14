@@ -14,7 +14,6 @@ import {
   mapToLink,
   rectangle,
   toFocusApp,
-  toSwitchWindow,
 } from "./utils";
 import { createVimLayer } from "./vim-layer";
 
@@ -164,6 +163,15 @@ const rules = [
   ...createVimLayer(),
 
   createLayer("f").manipulators(finderLayer),
+
+  createLayer("w").manipulators([
+    map("h").to$("open -g hammerspoon://focusLeft"),
+    map("j").to$("open -g hammerspoon://focusDown"),
+    map("k").to$("open -g hammerspoon://focusUp"),
+    map("l").to$("open -g hammerspoon://focusRight"),
+    map("n").to$("open -g hammerspoon://focusNextMonitor"),
+    map("p").to$("open -g hammerspoon://focusPreviousMonitor"),
+  ]),
 
   rule(
     "Chrome: Change ctrl+np to arrow keys",

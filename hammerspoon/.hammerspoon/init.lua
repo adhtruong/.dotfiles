@@ -4,6 +4,9 @@ hs = hs
 local windowNav = require("window-navigation")
 windowNav.bindKeys()
 
+-- Bind URL events for window navigation
+windowNav.bindUrlEvents()
+
 hs.urlevent.bind("someAlert", function(eventName, params)
 	hs.alert.show("Received someAlert")
 end)

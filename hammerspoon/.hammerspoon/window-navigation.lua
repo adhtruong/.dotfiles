@@ -127,4 +127,31 @@ function M.bindKeys()
 	end)
 end
 
+-- Bind URL events for external triggering (e.g., from Karabiner)
+function M.bindUrlEvents()
+	hs.urlevent.bind("focusLeft", function(eventName, params)
+		focusVisibleWindow("west")
+	end)
+
+	hs.urlevent.bind("focusRight", function(eventName, params)
+		focusVisibleWindow("east")
+	end)
+
+	hs.urlevent.bind("focusUp", function(eventName, params)
+		focusVisibleWindow("north")
+	end)
+
+	hs.urlevent.bind("focusDown", function(eventName, params)
+		focusVisibleWindow("south")
+	end)
+
+	hs.urlevent.bind("focusNextMonitor", function(eventName, params)
+		focusNextMonitor()
+	end)
+
+	hs.urlevent.bind("focusPreviousMonitor", function(eventName, params)
+		focusPreviousMonitor()
+	end)
+end
+
 return M
