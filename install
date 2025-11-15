@@ -3,17 +3,33 @@
 set -euo pipefail
 
 ZSH_COMPLETIONS="$HOME/.zfunc"
+mkdir -p "$ZSH_COMPLETIONS"
 
-function generate_completions() {
-	mkdir -p "$ZSH_COMPLETIONS"
+# Function to generate completion if tool exists
+generate_if_exists() {
+	local tool=$1
+	local command=$2
+	local output="$ZSH_COMPLETIONS/_${tool}"
 
-	uv generate-shell-completion zsh >"$ZSH_COMPLETIONS/_uv"
-	uvx --generate-shell-completion zsh >"$ZSH_COMPLETIONS/_uvx"
-	uvx ruff generate-shell-completion zsh >"$ZSH_COMPLETIONS/_ruff"
-	sesh completion zsh >"$ZSH_COMPLETIONS/_sesh"
-
-	autoload -Uz compinit && compinit
+	if command -v $tool &>/dev/null; then
+		echo "✓ Generating completion for $tool..."
+		eval "$command" >"$output" 2>/dev/null && echo "  → $output" || echo "  ✗ Failed to generate"
+	else
+		echo "⊘ Skipping $tool (not installed)"
+	fi
 }
 
-generate_completions
-zsh
+echo "Generating shell completions in $ZSH_COMPLETIONS"
+echo
+
+generate_if_exists "uv" "uv generate-shell-completion zsh"
+generate_if_exists "uvx" "uvx --generate-shell-completion zsh"
+generate_if_exists "ruff" "uvx ruff generate-shell-completion zsh"
+generate_if_exists "sesh" "sesh completion zsh"
+generate_if_exists "prek" "COMPLETE=zsh prek completion"
+
+echo
+echo "Rebuilding completion cache..."
+autoload -Uz compinit && compinit
+
+echo "Done! Restart your shell or run 'exec zsh' to load new completions."

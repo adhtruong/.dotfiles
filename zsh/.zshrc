@@ -150,6 +150,7 @@ fi
 eval "$(mise activate zsh)"
 
 zsh-defer source ~/.dotfiles/zsh/fzf-git-overrides.zsh
+zsh-defer source ~/.dotfiles/zsh/pre-commit-auto-install.zsh
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
