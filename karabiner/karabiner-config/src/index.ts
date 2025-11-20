@@ -86,7 +86,7 @@ const finderLayer = [
     {
       key_code: "tab",
       modifiers: ["right_command"],
-      hold_down_milliseconds: 20,
+      hold_down_milliseconds: 0,
     },
     { key_code: "vk_none" },
   ]),
@@ -94,7 +94,7 @@ const finderLayer = [
     {
       key_code: "grave_accent_and_tilde",
       modifiers: ["right_command"],
-      hold_down_milliseconds: 20,
+      hold_down_milliseconds: 0,
     },
     { key_code: "vk_none" },
   ]),
