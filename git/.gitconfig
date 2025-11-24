@@ -36,3 +36,7 @@ insteadOf = https://github.com/
 	prune = true
 	pruneTags = true
 	all = true
+[rebase]
+	autoSquash = true
+	autoStash = true
+	updateRefs = true

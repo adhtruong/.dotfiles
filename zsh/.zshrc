@@ -63,6 +63,7 @@ fi
 export XDG_CONFIG_HOME="$HOME/.config"
 unsetopt BEEP
 
+# shellcheck source=/dev/null
 [[ -f "$HOME/.local/bin/env" ]] && source "$HOME/.local/bin/env"
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
@@ -111,7 +112,7 @@ export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --e
 export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=reverse --border --margin=1 --padding=1 \
     --bind 'ctrl-b:preview-page-up' \
     --bind 'ctrl-d:preview-page-down' \
-    --bind 'ctrl-f:preview-page-down'
+    --bind 'ctrl-f:preview-page-down' \
     --bind 'ctrl-y:execute(readlink -f {} | pbcopy)'"
 
 export FZF_CTRL_T_COMMAND="fd --strip-cwd-prefix --hidden --follow --exclude .git"
