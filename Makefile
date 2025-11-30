@@ -31,4 +31,4 @@ karabiner:
 
 .PHONY: lint
 lint:  ## Run pre-commit hooks on all files
-	pre-commit run -a
+	prek run -a

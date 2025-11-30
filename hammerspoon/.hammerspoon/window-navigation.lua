@@ -7,7 +7,6 @@ local function focusVisibleWindow(direction)
 		return
 	end
 
-	local currentFrame = win:frame()
 	local screen = win:screen()
 
 	-- Get windows ordered by z-index (front to back)
