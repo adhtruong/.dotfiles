@@ -41,9 +41,10 @@ bindkey -M vicmd 'p' vi-paste-from-clipboard
 bindkey -M viins '^V' vi-paste-from-clipboard
 
 setopt glob_dots
-zstyle ':completion:*:*:make:*' tag-order 'targets'
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' ignored-patterns '.git' 'node_modules'
 zstyle ':completion:*' special-dirs false
+zstyle ':completion:*:*:make:*' tag-order 'targets'
 zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup
 
 # Check that the function `starship_zle-keymap-select()` is defined.
