@@ -6,7 +6,7 @@
     "update": "npm update karabiner.ts"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.0",
+    "@biomejs/biome": "2.3.10",
     "@types/node": "^20",
     "karabiner.ts": "latest",
     "tsx": "^4",
