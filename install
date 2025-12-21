@@ -29,6 +29,7 @@ generate_if_exists "sesh" "sesh completion zsh"
 generate_if_exists "prek" "COMPLETE=zsh prek completion"
 generate_if_exists "rustup" "rustup completions zsh"
 generate_if_exists "cargo" "rustup completions zsh cargo"
+generate_if_exists "mise" "mise completion zsh"
 
 echo
 echo "Rebuilding completion cache..."

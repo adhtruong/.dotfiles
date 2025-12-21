@@ -1,0 +1,7 @@
+[tasks.lint]
+description = "Run pre-commit hooks on all files"
+run = "prek run -a"
+
+[tasks.karabiner]
+description = "Build and restart Karabiner configuration"
+run = "cd karabiner/karabiner-config && npm ci && npm run build"
