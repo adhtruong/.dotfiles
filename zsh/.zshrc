@@ -40,6 +40,21 @@ bindkey -M vicmd 'y' vi-yank-to-clipboard
 bindkey -M vicmd 'p' vi-paste-from-clipboard
 bindkey -M viins '^V' vi-paste-from-clipboard
 
+# Edit command line in nvim with tmux popup
+edit-command-line-popup() {
+	local tmpfile=$(mktemp)
+	print -rn -- "$BUFFER" > "$tmpfile"
+	tmux popup -E -w 90% -h 90% "nvim '+normal! G$' '$tmpfile'"
+	if [[ -f "$tmpfile" ]]; then
+		BUFFER=$(cat "$tmpfile")
+		CURSOR=${#BUFFER}
+		rm -f "$tmpfile"
+	fi
+	zle reset-prompt
+}
+zle -N edit-command-line-popup
+bindkey -M vicmd 'v' edit-command-line-popup
+
 setopt glob_dots
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' ignored-patterns '.git' 'node_modules'

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Mode switcher: files (fd) and directories (zoxide)
+selected=$(
+	fd --strip-cwd-prefix --hidden --follow --exclude .git |
+		fzf --tmux 90%,90% \
+			--multi \
+			--prompt '📄  ' \
+			--header 'CTRL-D (zoxide) | CTRL-F (files) | CTRL-Y (copy)' \
+			--walker-skip .git,node_modules,target,.venv \
+			--preview 'fzf-preview {}' \
+			--bind 'ctrl-/:change-preview-window(down|hidden|)' \
+			--bind 'ctrl-y:execute(readlink -f {} | pbcopy)' \
+			--bind 'ctrl-d:change-prompt(📁  )+reload(zoxide query -l)' \
+			--bind 'ctrl-f:change-prompt(📄  )+reload(fd --strip-cwd-prefix --hidden --follow --exclude .git)'
+) || exit 0
+
+[ -n "$selected" ] && tmux send-keys "$selected"
