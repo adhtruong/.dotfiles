@@ -13,6 +13,9 @@ export function createVimLayer() {
 
       map("p").to("v", "left_command"),
       map("y").to("c", "left_command"),
+
+      map("0").to("left_arrow", "left_command"),
+      map("4").to("right_arrow", "left_command"),
     ]),
     createLayer("v").manipulators([
       map("j").to("down_arrow", "shift"),
@@ -26,6 +29,15 @@ export function createVimLayer() {
       map("e").to({
         key_code: "right_arrow",
         modifiers: ["left_option", "shift"],
+      }),
+
+      map("0").to({
+        key_code: "left_arrow",
+        modifiers: ["left_command", "shift"],
+      }),
+      map("4").to({
+        key_code: "right_arrow",
+        modifiers: ["left_command", "shift"],
       }),
     ]),
   ];
