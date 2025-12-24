@@ -19,6 +19,20 @@ generate_if_exists() {
 	fi
 }
 
+# Function to download completion from URL
+download_if_exists() {
+	local tool=$1
+	local url=$2
+	local output="$ZSH_COMPLETIONS/_${tool}"
+
+	if command -v $tool &>/dev/null; then
+		echo "✓ Downloading completion for $tool..."
+		curl -fsSL "$url" -o "$output" 2>/dev/null && echo "  → $output" || echo "  ✗ Failed to download"
+	else
+		echo "⊘ Skipping $tool (not installed)"
+	fi
+}
+
 echo "Generating shell completions in $ZSH_COMPLETIONS"
 echo
 
@@ -30,6 +44,7 @@ generate_if_exists "prek" "COMPLETE=zsh prek completion"
 generate_if_exists "rustup" "rustup completions zsh"
 generate_if_exists "cargo" "rustup completions zsh cargo"
 generate_if_exists "mise" "mise completion zsh"
+download_if_exists "docker" "https://raw.githubusercontent.com/docker/cli/master/contrib/completion/zsh/_docker"
 
 echo
 echo "Rebuilding completion cache..."

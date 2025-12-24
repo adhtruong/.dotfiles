@@ -1,9 +1,14 @@
 return {
   {
-    "askfiy/visual_studio_code",
+    "Mofiqul/vscode.nvim",
     priority = 100,
     config = function()
-      vim.cmd([[colorscheme visual_studio_code]])
+      require("vscode").setup({
+        transparent = false,
+        italic_comments = false,
+        disable_nvimtree_bg = true,
+      })
+      vim.cmd([[colorscheme vscode]])
     end,
   },
 }

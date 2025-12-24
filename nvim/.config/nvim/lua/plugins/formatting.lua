@@ -10,6 +10,12 @@ return {
       ["typescriptreact"] = { "biome-check" },
       ["json"] = { "biome-check" },
       ["css"] = { "biome-check" },
+
+      ["python"] = { "ruff_format", "ruff_organize_imports" },
+      ["lua"] = { "stylua" },
+      ["markdown"] = { "prettier" },
+      ["yaml"] = { "prettier" },
+      ["toml"] = { "taplo" },
     },
     formatters = {
       shfmt = {
