@@ -202,6 +202,7 @@ const rules = [
   rule("Disable hide and minimise").manipulators([
     map("m", "command").toNone(),
     map("h", "command").toNone(),
+    map("return_or_enter", "command").toNone(),
   ]),
 ];
 

@@ -14,7 +14,7 @@ _fzf_git_worktrees() {
 		--header 'CTRL-X (remove worktree) : CTRL+A (add) : ENTER (open sesh)' \
 		--bind "ctrl-x:reload($remove_cmd)" \
 		--bind 'ctrl-a:reload(git-worktree-add {q} >/dev/null 2>&1; git worktree list)' \
-		--bind 'enter:execute(sesh connect {1})+abort' \
+		--bind 'enter:become(sesh connect {1})' \
 		--preview "
       git -c color.status=$(__fzf_git_color .) -C {1} status --short --branch
       echo

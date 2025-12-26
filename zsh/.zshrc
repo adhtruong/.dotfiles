@@ -20,6 +20,13 @@ antidote load ~/.zsh_plugins.txt
 
 bindkey -v
 
+# Helper to bind keys in all modes
+bindkey-all() {
+    bindkey "$@"
+    bindkey -M viins "$@"
+    bindkey -M vicmd "$@"
+}
+
 # Make ESC switch to vi command mode instantly
 bindkey -M viins '^[' vi-cmd-mode
 
@@ -139,8 +146,8 @@ export FZF_CTRL_T_OPTS="
   --bind 'ctrl-/:change-preview-window(down|hidden|)'
   --bind 'ctrl-y:execute(readlink -f {} | pbcopy)'
   --bind 'ctrl-v:become:nvim {+} > /dev/tty'"
-bindkey "^u" kill-whole-line
-bindkey "^f" forward-word
+bindkey-all "^u" kill-whole-line
+bindkey-all "^f" forward-word
 
 # Use fd (https://github.com/sharkdp/fd) for listing path candidates.
 # - The first argument to the function ($1) is the base path to start traversal
