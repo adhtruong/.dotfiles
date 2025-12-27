@@ -1,2 +1,5 @@
-.zshrc.local.template
-.gitignore
+\.zshrc\.local\.template
+\.gitignore
+atuin-fzf-integration\.zsh
+fzf-git-overrides\.zsh
+pre-commit-auto-install\.zsh

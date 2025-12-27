@@ -3,10 +3,13 @@ if [ $PROFILING_MODE -ne 0 ]; then
 	zmodload zsh/zprof
 fi
 
+# Get the directory where this .zshrc file is located
+ZSHRC_DIR=${${(%):-%x}:A:h}
+
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
-fpath+=~/.zfunc
+fpath=(~/.zfunc $fpath)
 
 # NVM configuration for zsh-nvm plugin
 export NVM_LAZY_LOAD=true
@@ -128,8 +131,12 @@ alias code='env -u TMUX -u VIRTUAL_ENV code'
 alias cursor='env -u TMUX -u VIRTUAL_ENV cursor'
 
 # Set up fzf key bindings and fuzzy completion
+# Disable ctrl+r (handled by Atuin), disable alt+c (not used)
 # shellcheck source=/dev/null
-FZF_ALT_C_COMMAND='' source <(fzf --zsh)
+FZF_CTRL_R_COMMAND='' FZF_ALT_C_COMMAND='' source <(fzf --zsh)
+
+# Atuin + fzf integration
+source ${ZSHRC_DIR}/atuin-fzf-integration.zsh
 
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=reverse --border --margin=1 --padding=1 \
@@ -173,8 +180,8 @@ fi
 
 eval "$(mise activate zsh)"
 
-zsh-defer source ~/.dotfiles/zsh/fzf-git-overrides.zsh
-zsh-defer source ~/.dotfiles/zsh/pre-commit-auto-install.zsh
+zsh-defer source ${ZSHRC_DIR}/fzf-git-overrides.zsh
+zsh-defer source ${ZSHRC_DIR}/pre-commit-auto-install.zsh
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
