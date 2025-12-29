@@ -1,16 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-function main() {
+main() {
 	if [ -z "${1:-}" ]; then
 		echo "No file or directory specified"
 		exit 1
 	fi
 
-	if [ -d "$1" ]; then
-		eza -a --git-ignore --tree --color=always "$1" | head -200
+	# Detect if running in fzf preview or terminal (use colors)
+	# vs being piped to another command (no colors)
+	if [ -n "${FZF_PREVIEW_COLUMNS:-}" ] || [ -t 1 ]; then
+		color_mode="always"
 	else
-		bat --color=always --style=-grid,numbers,changes "$1"
+		color_mode="never"
+	fi
+
+	if [ -d "$1" ]; then
+		eza -a --git-ignore --tree --color="$color_mode" "$1" | head -200
+	else
+		bat --color="$color_mode" --style=-grid,numbers,changes "$1"
 	fi
 }
 

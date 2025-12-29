@@ -146,12 +146,16 @@ export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=revers
     --bind 'ctrl-y:execute(readlink -f {} | pbcopy)'"
 
 export FZF_CTRL_T_COMMAND="fd --strip-cwd-prefix --hidden --follow --exclude .git"
-export FZF_CTRL_T_OPTS="
-  --walker-skip .git,node_modules,target,.venv
-  --header 'CTRL-V (open) : CTRL-Y (copy)' \
-  --preview 'fzf-preview {}'
-  --bind 'ctrl-/:change-preview-window(down|hidden|)'
-  --bind 'ctrl-y:execute(readlink -f {} | pbcopy)'
+export FZF_CTRL_T_OPTS="\
+  --multi \
+  --prompt '📄  ' \
+  --walker-skip .git,node_modules,target,.venv \
+  --header 'CTRL-D (zoxide) | CTRL-F (files) | CTRL-V (open) | CTRL-Y (copy)' \
+  --preview 'fzf-preview {}' \
+  --bind 'ctrl-/:change-preview-window(down|hidden|)' \
+  --bind 'ctrl-y:execute(readlink -f {} | pbcopy)' \
+  --bind 'ctrl-d:change-prompt(📁  )+reload(zoxide query -l)' \
+  --bind 'ctrl-f:change-prompt(📄  )+reload($FZF_CTRL_T_COMMAND)' \
   --bind 'ctrl-v:become:nvim {+} > /dev/tty'"
 bindkey-all "^u" kill-whole-line
 bindkey-all "^f" forward-word
@@ -168,6 +172,9 @@ _fzf_compgen_dir() {
 	fd --type=d --hidden --exclude .git . "$1"
 }
 
+# Resolve symlinks when storing paths in zoxide
+# https://man.archlinux.org/man/zoxide.1.en
+export _ZO_RESOLVE_SYMLINKS=1
 zsh-defer eval "$(zoxide init zsh --cmd cd)"
 
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]]; then
