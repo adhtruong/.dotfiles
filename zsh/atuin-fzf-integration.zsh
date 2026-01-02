@@ -25,7 +25,7 @@ atuin-setup() {
 
     # Default to LOCAL (current directory) history
     selected=$(eval "atuin search $atuin_flags -c $PWD" |
-      FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS \
+      FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
         --read0 \
         --prompt 'LOCAL> ' \
         --header 'CTRL-A: toggle local/all | CTRL-R: toggle sort | CTRL-/: toggle preview' \
@@ -40,7 +40,6 @@ atuin-setup() {
         --bind 'ctrl-a:transform:[[ \$FZF_PROMPT == \"LOCAL> \" ]] &&
           echo \"change-prompt(ALL> )+reload(atuin search $atuin_flags)\" ||
           echo \"change-prompt(LOCAL> )+reload(atuin search $atuin_flags -c \$PWD)\"' \
-        --bind 'ctrl-z:ignore' \
         $FZF_CTRL_R_OPTS --query=\"${LBUFFER}\" +m" fzf)
 
     local ret=$?
