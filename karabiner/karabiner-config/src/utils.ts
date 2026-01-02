@@ -12,10 +12,6 @@ function toLink(link: string, alias = "") {
   return to$(`~/bin/find-or-open-tab ${link} ${alias}`);
 }
 
-export function toSwitchWindow(direction: "left" | "right") {
-  return to$(`~/bin/focus-window ${direction}`);
-}
-
 export function toFocusApp(appName: string) {
   return to$(`~/bin/focus-app-last-window '${appName}'`);
 }
