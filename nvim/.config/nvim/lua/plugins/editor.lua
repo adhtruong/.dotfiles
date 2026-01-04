@@ -12,8 +12,8 @@ return {
   {
     "folke/noice.nvim",
     opts = {
-      cmdline = {
-        view = "cmdline_popup",
+      presets = {
+        command_palette = true,
       },
       views = {
         cmdline_popup = {
@@ -31,5 +31,23 @@ return {
         },
       },
     },
+  },
+  {
+    "ibhagwan/fzf-lua",
+    opts = function()
+      local config = require("fzf-lua.config")
+      config.defaults.keymap.fzf["ctrl-u"] = "clear-query"
+      config.defaults.keymap.fzf["ctrl-w"] = "backward-kill-word"
+
+      return {
+        winopts = {
+          border = "rounded",
+        },
+        fzf_opts = {
+          ["--layout"] = "reverse",
+          ["--no-separator"] = "",
+        },
+      }
+    end,
   },
 }

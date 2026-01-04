@@ -3,6 +3,7 @@ return {
   opts = {
     inlay_hints = { enabled = false },
     servers = {
+      pyright = false,
       basedpyright = {
         settings = {
           basedpyright = {
