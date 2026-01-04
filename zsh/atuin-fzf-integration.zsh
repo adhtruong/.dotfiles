@@ -23,12 +23,12 @@ atuin-setup() {
     local atuin_fmt="{command}${delim}{directory}${delim}{duration}${delim}{exit}${delim}{relativetime}"
     local atuin_flags="--format \"$atuin_fmt\" --limit ${ATUIN_LIMIT:-5000} --reverse --print0"
 
-    # Default to LOCAL (current directory) history
-    selected=$(eval "atuin search $atuin_flags -c $PWD" |
+    # Default to ALL (global) history
+    selected=$(eval "atuin search $atuin_flags" |
       FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
         --read0 \
-        --prompt 'LOCAL> ' \
-        --header 'CTRL-A: toggle local/all | CTRL-R: toggle sort | CTRL-/: toggle preview' \
+        --prompt 'ALL> ' \
+        --header 'CTRL-A: toggle all/local | CTRL-R: toggle sort | CTRL-/: toggle preview' \
         --delimiter '$delim' \
         --with-nth 1 \
         --highlight-line \
@@ -37,9 +37,9 @@ atuin-setup() {
         --preview-window 'right:40%:wrap:hidden' \
         --bind 'ctrl-r:toggle-sort' \
         --bind 'ctrl-/:toggle-preview' \
-        --bind 'ctrl-a:transform:[[ \$FZF_PROMPT == \"LOCAL> \" ]] &&
-          echo \"change-prompt(ALL> )+reload(atuin search $atuin_flags)\" ||
-          echo \"change-prompt(LOCAL> )+reload(atuin search $atuin_flags -c \$PWD)\"' \
+        --bind 'ctrl-a:transform:[[ \$FZF_PROMPT == \"ALL> \" ]] &&
+          echo \"change-prompt(LOCAL> )+reload(atuin search $atuin_flags -c \$PWD)\" ||
+          echo \"change-prompt(ALL> )+reload(atuin search $atuin_flags)\"' \
         $FZF_CTRL_R_OPTS --query=\"${LBUFFER}\" +m" fzf)
 
     local ret=$?
