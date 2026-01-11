@@ -1,6 +1,5 @@
 import {
   ifApp,
-  layer,
   map,
   rule,
   to$,
@@ -70,11 +69,6 @@ const applicationManipulators = [
 const finderLayer = [
   map("j").to({ key_code: "tab", modifiers: ["right_command"] }),
   map("k").to({ key_code: "left_shift", modifiers: ["right_command"] }),
-  map("n").to({
-    key_code: "grave_accent_and_tilde",
-    modifiers: ["right_command"],
-  }),
-  map("p").to({ key_code: "left_shift", modifiers: ["right_command"] }),
 
   map("h").to({ key_code: "left_shift", modifiers: ["right_command"] }),
   map("l").to({
@@ -135,13 +129,6 @@ const rules = [
         }),
     ])
   ),
-
-  layer("tab").manipulators([
-    ...applicationManipulators,
-
-    // Activate resizing layer
-    map("w").toMeh(),
-  ]),
 
   ...(["e"] as const).map((key) =>
     createLayer(key).manipulators(applicationManipulators)

@@ -2,6 +2,7 @@
   "editor.formatOnSave": true,
   "editor.stickyScroll.enabled": true,
   "workbench.activityBar.location": "top",
+  "workbench.activityBar.orientation": "vertical",
   "editor.cursorSurroundingLines": 8,
 
   "terminal.integrated.minimumContrastRatio": 1,
@@ -61,7 +62,8 @@
   "basedpyright.analysis.typeCheckingMode": "standard",
 
   "editor.codeActionsOnSave": {
-    "source.fixAll.biome": "explicit"
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "always"
   },
 
   "go.useLanguageServer": true,
