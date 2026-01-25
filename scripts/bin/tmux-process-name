@@ -1,0 +1,12 @@
+#!/bin/bash
+# Returns the display name for a tmux pane, detecting Claude by process tree
+
+pane_pid="$1"
+window_name="$2"
+
+# Check if any child process of this pane is claude
+if ps -axo ppid,comm | awk -v ppid="$pane_pid" '$1 == ppid && $2 == "claude" {found=1; exit} END {exit !found}'; then
+    echo "claude"
+else
+    echo "$window_name"
+fi

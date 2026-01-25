@@ -18,6 +18,7 @@ insteadOf = https://github.com/
 	chekcout = checkout # spellchecker:disable-line
 
 	git = !git
+	sync = !git fetch && git rebase origin/$(git default-branch)
 
 [include]
 	path = ~/.gitconfig_local
