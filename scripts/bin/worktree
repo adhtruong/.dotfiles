@@ -5,6 +5,7 @@
 #   worktree           # Interactive UI
 #   worktree add <branch>    # Add worktree
 #   worktree remove <path>   # Remove worktree
+#   worktree list            # List worktrees (for scripting)
 
 set -euo pipefail
 
@@ -16,52 +17,75 @@ Commands:
     (no args)           Open interactive worktree manager
     add <branch>        Create new worktree for branch
     remove <path>       Remove worktree at path
+    list                List worktrees (paths only, for scripting)
     -h, --help          Show this help
 
 Examples:
     worktree
     worktree add feature-login
     worktree remove /path/to/worktree
+    worktree list | xargs -I{} git -C {} status
 EOF
 }
 
 check_git_repo() {
-	if ! git rev-parse --git-dir >/dev/null 2>&1; then
-		return 1
-	fi
-	return 0
+	git rev-parse --git-dir >/dev/null 2>&1
+}
+
+get_repo_root() {
+	git worktree list | head -1 | awk '{print $1}'
+}
+
+get_default_branch() {
+	local ref
+	ref=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null) && echo "${ref##refs/remotes/origin/}" || echo "main"
+}
+
+cleanup_after_remove() {
+	git delete-squashed >/dev/null 2>&1 || true
+	tmux-clean >/dev/null 2>&1 || true
 }
 
 add_worktree() {
 	local branch_name="$1"
-	local repo_root
-	repo_root=$(git worktree list | head -1 | awk '{print $1}')
-	local worktree_path="$repo_root-features/$branch_name"
 
 	if [[ -z "$branch_name" ]]; then
 		echo "Error: Branch name cannot be empty"
 		return 1
 	fi
 
-	if [[ -d "$worktree_path" ]]; then
-		echo "Error: Worktree directory '$worktree_path' already exists"
+	# Validate branch name (no spaces or special chars except - _ /)
+	if [[ ! "$branch_name" =~ ^[a-zA-Z0-9/_-]+$ ]]; then
+		echo "Error: Invalid branch name '$branch_name' (use alphanumeric, -, _, /)"
 		return 1
 	fi
 
+	local repo_root
+	repo_root=$(get_repo_root)
+	local worktree_path="$repo_root-features/$branch_name"
+
+	if [[ -d "$worktree_path" ]]; then
+		echo "Error: Worktree already exists at $worktree_path"
+		return 1
+	fi
+
+	local output
 	# Try to create worktree with new branch first
-	if git worktree add -b "$branch_name" "$worktree_path" >/dev/null 2>&1; then
+	if output=$(git worktree add -b "$branch_name" "$worktree_path" 2>&1); then
 		echo "Created worktree '$branch_name' at $worktree_path"
 		return 0
 	fi
 
-	# If that failed, try with existing branch
-	if git worktree add "$worktree_path" "$branch_name" >/dev/null 2>&1; then
+	# If branch exists, try using existing branch
+	if output=$(git worktree add "$worktree_path" "$branch_name" 2>&1); then
 		echo "Created worktree for existing branch '$branch_name' at $worktree_path"
 		return 0
-	else
-		echo "Error: Failed to create worktree '$branch_name'"
-		return 1
 	fi
+
+	# Show actual error
+	echo "Error: Failed to create worktree '$branch_name'"
+	echo "$output" | head -3
+	return 1
 }
 
 remove_worktree() {
@@ -72,49 +96,73 @@ remove_worktree() {
 		return 1
 	fi
 
-	if git worktree remove -f "$worktree_path" 2>/dev/null; then
+	# Change to repo root first (can't remove worktree while inside it)
+	local repo_root
+	repo_root=$(get_repo_root)
+
+	local output
+	if output=$(git -C "$repo_root" worktree remove -f "$worktree_path" 2>&1); then
 		echo "Removed worktree: $worktree_path"
-		git delete-squashed >/dev/null 2>&1 || true
-		tmux-clean >/dev/null 2>&1 || true
+		cleanup_after_remove
 		return 0
-	else
-		echo "Error: Failed to remove worktree '$worktree_path'"
-		return 1
 	fi
+
+	echo "Error: Failed to remove worktree '$worktree_path'"
+	echo "$output" | head -3
+	return 1
+}
+
+list_worktrees() {
+	git worktree list --porcelain | awk '/^worktree / {print $2}'
 }
 
 interactive_mode() {
 	if ! check_git_repo; then
-		echo "Not a git repository"
-		echo ""
-		read -p "Press enter to close..."
 		return 1
 	fi
 
-	local remove_cmd='
-		[[ "$(pwd)" == {1}* ]] && cd "$(git worktree list | head -1 | awk '\''{print $1}'\'')";
-		git worktree remove -f {1};
-		git delete-squashed >/dev/null 2>&1 || true;
-		tmux-clean >/dev/null 2>&1 || true;
-		git worktree list
-	'
+	local repo_root
+	repo_root=$(get_repo_root)
 
 	local selected
 	selected=$(git worktree list | fzf \
 		--ansi \
 		--border-label '🌴 Worktrees ' \
 		--header 'CTRL-X (remove) : CTRL-A (add) : ENTER (connect)' \
-		--bind "ctrl-x:reload($remove_cmd)" \
-		--bind 'ctrl-a:reload(worktree add {q} >/dev/null 2>&1; git worktree list)' \
-		--preview "
-			echo -e '\033[1;36m📍 Worktree:\033[0m {1}'
+		--bind "ctrl-x:reload(worktree remove {1} >/dev/null; git -C '$repo_root' worktree list)" \
+		--bind "ctrl-a:reload(worktree add {q} >/dev/null; git -C '$repo_root' worktree list)" \
+		--preview "$(
+			cat <<'PREVIEW'
+			path={1}
+			echo -e '\033[1;36m📍 Worktree:\033[0m '"$path"
 			echo
+
+			# Show branch with ahead/behind info
+			branch=$(git -C "$path" branch --show-current 2>/dev/null)
+			ref=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null) && default="${ref##refs/remotes/origin/}" || default="main"
+			if [[ -n "$branch" ]]; then
+				ahead=$(git -C "$path" rev-list --count "origin/$default..$branch" 2>/dev/null || echo 0)
+				behind=$(git -C "$path" rev-list --count "$branch..origin/$default" 2>/dev/null || echo 0)
+				status=""
+				[[ "$ahead" -gt 0 ]] && status+="↑$ahead "
+				[[ "$behind" -gt 0 ]] && status+="↓$behind"
+				echo -e "\033[1;32m🌿 Branch:\033[0m $branch ${status:+\033[1;33m[$status]\033[0m}"
+			fi
+
+			# Dirty indicator
+			if [[ -n $(git -C "$path" status --porcelain 2>/dev/null) ]]; then
+				echo -e '\033[1;31m⚠  Uncommitted changes\033[0m'
+			fi
+			echo
+
 			echo -e '\033[1;33m📊 Status:\033[0m'
-			git -C {1} -c color.status=always status --short --branch 2>/dev/null
+			git -C "$path" -c color.status=always status --short --branch 2>/dev/null
 			echo
+
 			echo -e '\033[1;35m📜 Recent Commits:\033[0m'
-			git -C {1} log --oneline --graph --date=short --color=always --pretty='format:%C(auto)%cd %h%d %s' -10 2>/dev/null
-		") || return 0
+			git -C "$path" log --oneline --graph --date=short --color=always --pretty='format:%C(auto)%cd %h%d %s' -10 2>/dev/null
+PREVIEW
+		)") || return 0
 
 	if [[ -n "$selected" ]]; then
 		local worktree_path
@@ -130,18 +178,25 @@ main() {
 		exit 0
 		;;
 	add)
-		if ! check_git_repo; then
+		check_git_repo || {
 			echo "Error: Not a git repository"
 			exit 1
-		fi
+		}
 		add_worktree "${2:-}"
 		;;
 	remove)
-		if ! check_git_repo; then
+		check_git_repo || {
 			echo "Error: Not a git repository"
 			exit 1
-		fi
+		}
 		remove_worktree "${2:-}"
+		;;
+	list)
+		check_git_repo || {
+			echo "Error: Not a git repository"
+			exit 1
+		}
+		list_worktrees
 		;;
 	"")
 		interactive_mode

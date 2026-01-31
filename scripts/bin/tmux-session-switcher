@@ -6,7 +6,7 @@ sesh connect "$(
 	sesh list --icons -d | fzf \
 		--ansi \
 		--no-sort --border-label ' sesh ' --prompt '⚡  ' \
-		--header '  ^a all ^t tmux ^x zoxide ^d tmux kill ^f find ^w worktrees' \
+		--header '^a all ^t tmux ^x zoxide ^d kill ^f find ^w worktrees' \
 		--preview 'sesh preview {}' \
 		--preview-window='right:50%' \
 		--bind 'tab:down,btab:up' \
