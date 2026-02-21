@@ -26,7 +26,7 @@ install-bundle: ## Install packages from Brewfile
 	brew bundle --no-upgrade
 
 .PHONY: karabiner
-karabiner:
+karabiner: ## Build Karabiner Elements configuration
 	@cd karabiner/karabiner-config && npm ci && npm run build
 
 .PHONY: lint
