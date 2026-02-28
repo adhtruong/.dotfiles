@@ -2,10 +2,13 @@
 
 # Git worktree manager - both interactive and CLI modes
 # Usage:
-#   worktree           # Interactive UI
-#   worktree add <branch>    # Add worktree
-#   worktree remove <path>   # Remove worktree
-#   worktree list            # List worktrees (for scripting)
+#   worktree                         # Interactive UI
+#   worktree add <branch>            # Add worktree
+#   worktree add <branch> --base <b> # Add worktree from specific base branch
+#   worktree remove <path>           # Remove worktree
+#   worktree list                    # List worktrees (for scripting)
+#   worktree switch <branch>         # Connect to existing worktree by branch name
+#   worktree switch -c <branch>      # Create worktree and connect
 
 set -euo pipefail
 
@@ -14,17 +17,23 @@ usage() {
 Usage: worktree [COMMAND] [ARGS]
 
 Commands:
-    (no args)           Open interactive worktree manager
-    add <branch>        Create new worktree for branch
-    remove <path>       Remove worktree at path
-    list                List worktrees (paths only, for scripting)
-    -h, --help          Show this help
+    (no args)                  Open interactive worktree manager
+    add <branch>               Create new worktree for branch
+    add <branch> --base <b>    Create worktree from specific base branch
+    remove <path>              Remove worktree at path
+    list                       List worktrees (paths only, for scripting)
+    switch <branch>            Connect to existing worktree by branch name
+    switch -c <branch>         Create worktree and connect
+    -h, --help                 Show this help
 
 Examples:
     worktree
     worktree add feature-login
+    worktree add feature-login --base develop
     worktree remove /path/to/worktree
     worktree list | xargs -I{} git -C {} status
+    worktree switch feature-login
+    worktree switch -c feature-login
 EOF
 }
 
@@ -36,11 +45,6 @@ get_repo_root() {
 	git worktree list | head -1 | awk '{print $1}'
 }
 
-get_default_branch() {
-	local ref
-	ref=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null) && echo "${ref##refs/remotes/origin/}" || echo "main"
-}
-
 cleanup_after_remove() {
 	git delete-squashed >/dev/null 2>&1 || true
 	tmux-clean >/dev/null 2>&1 || true
@@ -48,6 +52,7 @@ cleanup_after_remove() {
 
 add_worktree() {
 	local branch_name="$1"
+	local base_branch="${2:-}"
 
 	if [[ -z "$branch_name" ]]; then
 		echo "Error: Branch name cannot be empty"
@@ -71,9 +76,16 @@ add_worktree() {
 
 	local output
 	# Try to create worktree with new branch first
-	if output=$(git worktree add -b "$branch_name" "$worktree_path" 2>&1); then
-		echo "Created worktree '$branch_name' at $worktree_path"
-		return 0
+	if [[ -n "$base_branch" ]]; then
+		if output=$(git worktree add -b "$branch_name" "$worktree_path" "$base_branch" 2>&1); then
+			echo "Created worktree '$branch_name' at $worktree_path (from $base_branch)"
+			return 0
+		fi
+	else
+		if output=$(git worktree add -b "$branch_name" "$worktree_path" 2>&1); then
+			echo "Created worktree '$branch_name' at $worktree_path"
+			return 0
+		fi
 	fi
 
 	# If branch exists, try using existing branch
@@ -96,7 +108,6 @@ remove_worktree() {
 		return 1
 	fi
 
-	# Change to repo root first (can't remove worktree while inside it)
 	local repo_root
 	repo_root=$(get_repo_root)
 
@@ -116,6 +127,37 @@ list_worktrees() {
 	git worktree list --porcelain | awk '/^worktree / {print $2}'
 }
 
+switch_worktree() {
+	local create=0
+	local branch_name=""
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		-c) create=1; shift ;;
+		*)  branch_name="$1"; shift ;;
+		esac
+	done
+
+	if [[ -z "$branch_name" ]]; then
+		echo "Error: Branch name required"
+		return 1
+	fi
+
+	if [[ "$create" -eq 1 ]]; then
+		add_worktree "$branch_name" || return 1
+	fi
+
+	local match
+	match=$(git worktree list --porcelain \
+		| awk '/^worktree / {path=$2} /^branch refs\/heads\// {branch=$2; sub("refs/heads/","",branch); if (branch=="'"$branch_name"'") print path}')
+
+	if [[ -z "$match" ]]; then
+		echo "Error: No worktree for branch '$branch_name'"
+		return 1
+	fi
+
+	sesh connect "$match"
+}
+
 interactive_mode() {
 	if ! check_git_repo; then
 		return 1
@@ -130,7 +172,7 @@ interactive_mode() {
 		--border-label '🌴 Worktrees ' \
 		--header 'CTRL-X (remove) : CTRL-A (add) : ENTER (connect)' \
 		--bind "ctrl-x:reload(worktree remove {1} >/dev/null; git -C '$repo_root' worktree list)" \
-		--bind "ctrl-a:reload(worktree add {q} >/dev/null; git -C '$repo_root' worktree list)" \
+		--bind "ctrl-a:reload(worktree add {q} --base main >/dev/null; git -C '$repo_root' worktree list)" \
 		--preview "$(
 			cat <<'PREVIEW'
 			path={1}
@@ -182,7 +224,21 @@ main() {
 			echo "Error: Not a git repository"
 			exit 1
 		}
-		add_worktree "${2:-}"
+		local branch_name="${2:-}"
+		local base_branch=""
+		shift 2 2>/dev/null || shift $# 2>/dev/null || true
+		while [[ $# -gt 0 ]]; do
+			case "$1" in
+			--base)
+				base_branch="${2:-}"
+				shift 2
+				;;
+			*)
+				shift
+				;;
+			esac
+		done
+		add_worktree "$branch_name" "$base_branch"
 		;;
 	remove)
 		check_git_repo || {
@@ -197,6 +253,14 @@ main() {
 			exit 1
 		}
 		list_worktrees
+		;;
+	switch)
+		check_git_repo || {
+			echo "Error: Not a git repository"
+			exit 1
+		}
+		shift
+		switch_worktree "$@"
 		;;
 	"")
 		interactive_mode

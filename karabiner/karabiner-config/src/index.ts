@@ -174,17 +174,7 @@ const rules = [
   rule(
     "Chrome: improve new tab vimium behaviour",
     ifApp("Chrome")
-  ).manipulators([
-    map("t", "command").to([
-      { key_code: "t" },
-      { key_code: "vk_none", hold_down_milliseconds: 100 },
-      {
-        key_code: "l",
-        modifiers: ["command"],
-      },
-      { key_code: "delete_or_backspace" },
-    ]),
-  ]),
+  ).manipulators([map("t", "command").to([{ key_code: "t" }])]),
 
   rule("Disable hide and minimise").manipulators([
     map("m", "command").toNone(),
