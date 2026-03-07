@@ -6,9 +6,6 @@ fi
 # Get the directory where this .zshrc file is located
 ZSHRC_DIR=${${(%):-%x}:A:h}
 
-# If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/bin:$PATH
-
 fpath=(~/.zfunc $fpath)
 
 source $(brew --prefix)/opt/antidote/share/antidote/antidote.zsh
@@ -75,13 +72,6 @@ if [[ "${widgets[zle - keymap - select]#user:}" == "starship_zle-keymap-select" 
 fi
 eval "$(starship init zsh)"
 
-# Preferred editor for local and remote sessions
-if [[ -n $SSH_CONNECTION ]]; then
-	export EDITOR='vim'
-else
-	export EDITOR='nvim'
-fi
-export XDG_CONFIG_HOME="$HOME/.config"
 unsetopt BEEP
 
 # shellcheck source=/dev/null
