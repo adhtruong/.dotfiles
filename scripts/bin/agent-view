@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+output="$(agent-state list 2>/dev/null || true)"
+
+if [[ -z "$output" || "$output" == "No agents" ]]; then
+	echo "No agents"
+	exit 0
+fi
+
+formatted="$(printf '%s\n' "$output" | column -t -s $'\t' 2>/dev/null || true)"
+printf '%s\n' "$formatted" |
+	fzf \
+		--ansi \
+		--no-sort \
+		--border-label ' 🤖 agents ' \
+		--header 'ENTER connect · ^x kill pane' \
+		--with-nth '1..5' \
+		--preview 'tmux capture-pane -e -p -t {6} 2>/dev/null || sesh preview {3}' \
+		--preview-window 'right:50%' \
+		--bind 'enter:become(agent-state connect-pane {3} {6})' \
+		--bind 'ctrl-x:execute(tmux kill-pane -t {6}; agent-state prune)' || true

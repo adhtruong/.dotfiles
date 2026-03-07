@@ -1,0 +1,224 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["typer"]
+# ///
+"""Track AI agent state per tmux pane. States: working | finished | needs_prompt"""
+
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+from typing import Annotated, Literal, NotRequired, TypedDict
+
+import typer
+
+AgentState = Literal["working", "finished", "needs_prompt"]
+
+
+class Entry(TypedDict):
+    state: AgentState
+    tmux_pane: str
+    tmux_session: str
+    set_at: int
+    agent: NotRequired[str]
+
+
+StateDict = dict[str, Entry]
+
+
+MARKERS: dict[AgentState, str] = {
+    "working": "🤖",
+    "finished": "✅",
+    "needs_prompt": "💬",
+}
+
+PRIORITY: dict[AgentState, int] = {
+    "needs_prompt": 0,
+    "working": 1,
+    "finished": 2,
+}
+
+
+_xdg = os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share"))
+STATE_FILE = Path(_xdg) / "agent" / "state.json"
+
+
+def load() -> StateDict:
+    try:
+        return json.loads(STATE_FILE.read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def save(state: StateDict) -> None:
+    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    tmp = STATE_FILE.with_suffix(".tmp")
+    tmp.write_text(json.dumps(state, indent=2))
+    tmp.rename(STATE_FILE)
+
+
+def sh(*cmd: str) -> str:
+    """Run a command, return stripped stdout, or '' on failure."""
+    r = subprocess.run([*cmd], capture_output=True, text=True)
+    return r.stdout.strip() if r.returncode == 0 else ""
+
+
+def entry_key(pane: str, agent: str) -> str:
+    return f"{pane}:{agent}" if agent else pane
+
+
+def pane_path(pane: str) -> str:
+    return sh("tmux", "display-message", "-t", pane, "-p", "#{pane_current_path}")
+
+
+def pane_branch(path: str) -> str:
+    return sh("git", "-C", path, "branch", "--show-current") if path else ""
+
+
+def pane_session(pane: str) -> str:
+    return sh("tmux", "display-message", "-t", pane, "-p", "#S")
+
+
+def git_context() -> str | None:
+    """Return TMUX_PANE if the pane is inside a git repo, None otherwise."""
+    pane = os.environ.get("TMUX_PANE", "")
+    if not pane:
+        return None
+    path = pane_path(pane)
+    return pane if path and pane_branch(path) else None
+
+
+def age_str(set_at: float) -> str:
+    secs = time.time() - set_at
+    if secs < 60:
+        return f"{int(secs)}s"
+    if secs < 3600:
+        return f"{int(secs / 60)}m"
+    return f"{int(secs / 3600)}h"
+
+
+def cmd_transition(new_state: AgentState, agent: str = "") -> None:
+    """Write a state transition for the current pane."""
+    pane = git_context()
+    if pane is None:
+        return
+    state = load()
+    entry: Entry = {
+        "state": new_state,
+        "tmux_pane": pane,
+        "tmux_session": pane_session(pane),
+        "set_at": int(time.time()),
+    }
+    if agent:
+        entry["agent"] = agent
+    state[entry_key(pane, agent)] = entry
+    save(state)
+
+
+def cmd_clear(agent: str = "") -> None:
+    pane = git_context()
+    if pane is None:
+        return
+    state = load()
+    state.pop(entry_key(pane, agent), None)
+    save(state)
+
+
+def cmd_prune() -> None:
+    alive = set(sh("tmux", "list-panes", "-a", "-F", "#{pane_id}").splitlines())
+    state = load()
+    save({k: v for k, v in state.items() if k.split(":")[0] in alive})
+
+
+def cmd_list() -> None:
+    cmd_prune()
+    state = load()
+    if not state:
+        print("No agents", file=sys.stderr)
+        return
+    entries = sorted(state.values(), key=lambda e: PRIORITY.get(e["state"], 99))
+    for e in entries:
+        pane = e.get("tmux_pane", "")
+        path = pane_path(pane)
+        print(
+            "\t".join([
+                MARKERS.get(e["state"], "?"),
+                pane_branch(path),
+                e.get("tmux_session") or pane_session(pane),
+                age_str(e.get("set_at", time.time())),
+                e.get("agent", ""),
+                pane,
+            ])
+        )
+
+
+def cmd_debug() -> None:
+    state = load()
+    for entry in state.values():
+        pane = entry.get("tmux_pane", "")
+        path = pane_path(pane)
+        entry["_path"] = path  # type: ignore[typeddict-unknown-key]
+        entry["_branch"] = pane_branch(path)  # type: ignore[typeddict-unknown-key]
+        entry["_repo"] = sh("git", "-C", path, "remote", "get-url", "origin") if path else ""  # type: ignore[typeddict-unknown-key]
+    print(json.dumps({"config": {"state_file": str(STATE_FILE)}, "state": state}, indent=2))
+
+
+def cmd_connect_pane(session: str, pane: str) -> None:
+    sh("tmux", "switch-client", "-t", session)
+    if pane:
+        window = sh("tmux", "display-message", "-t", pane, "-p", "#{window_index}")
+        if window:
+            sh("tmux", "select-window", "-t", f"{session}:{window}")
+        sh("tmux", "select-pane", "-t", pane)
+
+
+app = typer.Typer(pretty_exceptions_enable=False)
+
+AgentOpt = Annotated[str, typer.Option("--agent")]
+
+
+@app.command()
+def working(agent: AgentOpt = "") -> None:
+    cmd_transition("working", agent)
+
+
+@app.command()
+def finished(agent: AgentOpt = "") -> None:
+    cmd_transition("finished", agent)
+
+
+@app.command()
+def needs_prompt(agent: AgentOpt = "") -> None:
+    cmd_transition("needs_prompt", agent)
+
+
+@app.command()
+def clear(agent: AgentOpt = "") -> None:
+    cmd_clear(agent)
+
+
+@app.command()
+def prune() -> None:
+    cmd_prune()
+
+
+@app.command()
+def list() -> None:
+    cmd_list()
+
+
+@app.command()
+def debug() -> None:
+    cmd_debug()
+
+
+@app.command()
+def connect_pane(session: str, pane: Annotated[str, typer.Argument()] = "") -> None:
+    cmd_connect_pane(session, pane)
+
+
+if __name__ == "__main__":
+    app()

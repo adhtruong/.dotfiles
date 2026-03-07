@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "agent-state needs-prompt --agent cursor || true"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "agent-state working --agent cursor || true"
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "agent-state finished --agent cursor || true"
+      }
+    ],
+    "stop": [
+      {
+        "command": "agent-state finished --agent cursor || true"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "agent-state clear --agent cursor || true"
+      }
+    ]
+  }
+}
