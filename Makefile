@@ -19,7 +19,7 @@ delete: ## Remove all dotfile links from home directory
 brewfile: ## Update Brewfile with currently installed packages
 	brew bundle dump --force --no-upgrade
 	# HACK filter out go and cargo files
-	grep -vE '^(go|cargo) ' Brewfile > Brewfile.tmp && mv Brewfile.tmp Brewfile
+	grep -vE '^(go|cargo|uv) ' Brewfile > Brewfile.tmp && mv Brewfile.tmp Brewfile
 
 .PHONY: install-bundle
 install-bundle: ## Install packages from Brewfile
