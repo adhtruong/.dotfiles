@@ -15,7 +15,7 @@ return {
       ["lua"] = { "stylua" },
       ["markdown"] = { "prettier" },
       ["yaml"] = { "prettier" },
-      ["toml"] = { "taplo" },
+      ["toml"] = { "tombi" },
     },
     formatters = {
       shfmt = {
