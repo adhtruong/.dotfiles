@@ -9,15 +9,13 @@ return {
   "neovim/nvim-lspconfig",
   opts = function(_, opts)
     opts.inlay_hints = { enabled = false }
-    opts.servers = vim.tbl_deep_extend("force", opts.servers or {}, {
-      -- Disable K hover for all LSP servers
-      ["*"] = {
-        keys = {
-          { "K", false },
-        },
-      },
-      taplo = false,
-      pyright = false,
+
+    opts.servers = opts.servers or {}
+    opts.servers["*"] = opts.servers["*"] or {}
+    opts.servers["*"].keys = opts.servers["*"].keys or {}
+    table.insert(opts.servers["*"].keys, { "K", false })
+
+    opts.servers = vim.tbl_deep_extend("force", opts.servers, {
       basedpyright = {
         settings = {
           basedpyright = {
