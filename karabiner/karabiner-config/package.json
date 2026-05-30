@@ -2,7 +2,8 @@
   "name": "karabiner-config",
   "description": "karabiner config in karabiner.ts",
   "scripts": {
-    "build": "tsx src/index.ts && launchctl kickstart -k gui/$(id -u)/org.pqrs.service.agent.karabiner_console_user_server",
+    "build": "tsx src/index.ts && launchctl kickstart -k gui/$(id -u)/org.pqrs.service.agent.karabiner_console_user_server && npm run disable-caps-lock",
+    "disable-caps-lock": "hidutil property --set '{\"UserKeyMapping\":[{\"HIDKeyboardModifierMappingSrc\":0x700000039,\"HIDKeyboardModifierMappingDst\":0x700000000}]}'",
     "update": "npm update karabiner.ts"
   },
   "devDependencies": {
