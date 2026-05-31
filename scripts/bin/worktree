@@ -130,6 +130,24 @@ list_worktrees() {
 	fi
 }
 
+connect_worktree() {
+	local target
+	target=$(printf '%s' "${1:-}" | xargs)
+	[[ -z "$target" ]] && return 0
+
+	local session current
+	session=$(sesh list -j -t 2>/dev/null | jq -r --arg p "$target" '.[] | select(.Path == $p) | .Name' 2>/dev/null | head -1)
+	current=$(tmux display-message -p '#{session_name}' 2>/dev/null)
+
+	if [[ -n "$session" && "$session" == "$current" ]]; then
+		return 0
+	elif [[ -n "$session" ]]; then
+		tmux switch-client -t "$session"
+	else
+		sesh connect "$target"
+	fi
+}
+
 switch_worktree() {
 	local create=0
 	local branch_name=""
@@ -163,14 +181,14 @@ interactive_mode() {
 	local repo_root
 	repo_root=$(get_repo_root)
 
-	local selected
-	selected=$(worktree -C "$repo_root" list --status | fzf \
+	worktree -C "$repo_root" list --status | fzf \
 		--ansi \
 		--delimiter $'\t' \
 		--border-label '🌴 Worktrees ' \
 		--header 'CTRL-X (remove) : CTRL-A (add) : ENTER (connect)' \
 		--bind "ctrl-x:execute-silent(worktree -C '$repo_root' remove {1} --force 2>/dev/null || true)+reload(worktree -C '$repo_root' list --status)" \
 		--bind "ctrl-a:transform:[[ -n {q} ]] && echo 'reload(worktree -C \"$repo_root\" add {q} --base main >/dev/null; worktree -C \"$repo_root\" list --status)' || echo 'bell'" \
+		--bind 'enter:become(worktree connect {1})' \
 		--preview "$(
 			cat <<'PREVIEW'
 			path=$(echo {1} | xargs)
@@ -200,13 +218,7 @@ interactive_mode() {
 			echo -e '\033[1;35m📜 Recent Commits:\033[0m'
 			git -C "$path" log --oneline --graph --date=short --color=always --pretty='format:%C(auto)%cd %h%d %s' -10 2>/dev/null
 PREVIEW
-		)") || return 0
-
-	if [[ -n "$selected" ]]; then
-		local worktree_path
-		worktree_path=$(echo "$selected" | cut -f1 | xargs)
-		sesh connect "$worktree_path"
-	fi
+		)" || true
 }
 
 main() {
@@ -240,6 +252,9 @@ main() {
 	list)
 		check_git_repo || { echo "Error: Not a git repository"; exit 1; }
 		list_worktrees "${2:-}"
+		;;
+	connect)
+		connect_worktree "${2:-}"
 		;;
 	switch)
 		check_git_repo || { echo "Error: Not a git repository"; exit 1; }

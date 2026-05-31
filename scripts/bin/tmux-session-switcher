@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-sesh connect "$(
+selected="$(
 	sesh list --icons -d | fzf \
 		--ansi \
 		--no-sort --border-label ' sesh ' --prompt '⚡  ' \
@@ -15,5 +15,7 @@ sesh connect "$(
 		--bind 'ctrl-x:change-prompt(📁  )+reload(sesh list -z --icons)' \
 		--bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
 		--bind 'ctrl-w:become(worktree)' \
-		--bind 'ctrl-d:execute(tmux kill-session -t {2..})+change-prompt(⚡  )+reload(sesh list --icons -d)'
+		--bind 'ctrl-d:execute(tmux kill-session -t {2..})+change-prompt(⚡  )+reload(sesh list --icons -d)' \
+		|| true
 )"
+if [[ -n "$selected" ]]; then sesh connect "$selected"; fi
