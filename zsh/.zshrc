@@ -175,6 +175,8 @@ eval "$(mise activate zsh)"
 zsh-defer source ${ZSHRC_DIR}/fzf-git-overrides.zsh
 zsh-defer source ${ZSHRC_DIR}/pre-commit-auto-install.zsh
 
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"

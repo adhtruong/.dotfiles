@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-# Git worktree manager - both interactive and CLI modes
+# Tmux/sesh integration layer over wt (worktrunk)
+# wt handles git operations; this script adds sesh/tmux lifecycle and custom fzf UI
 # Usage:
 #   worktree                         # Interactive UI
 #   worktree add <branch>            # Add worktree
 #   worktree add <branch> --base <b> # Add worktree from specific base branch
-#   worktree remove <path>           # Remove worktree
-#   worktree prune                   # Prune stale worktree entries
+#   worktree remove <path>           # Remove worktree (fails if dirty)
+#   worktree remove <path> --force   # Remove worktree discarding uncommitted changes
 #   worktree list                    # List worktrees (for scripting)
-#   worktree switch <branch>         # Connect to existing worktree by branch name
+#   worktree list --status           # List worktrees with status (for fzf UI)
+#   worktree switch <branch>         # Connect to worktree (supports wt shortcuts: pr:N, ^, -)
 #   worktree switch -c <branch>      # Create worktree and connect
 
 set -euo pipefail
@@ -23,9 +25,9 @@ Commands:
     add <branch> --base <b>    Create worktree from specific base branch
     remove <path>              Remove worktree at path (fails if dirty)
     remove <path> --force      Remove worktree discarding uncommitted changes
-    prune                      Prune stale worktree admin entries
     list                       List worktrees (paths only, for scripting)
-    switch <branch>            Connect to existing worktree by branch name
+    list --status              List worktrees with status indicators
+    switch <branch>            Connect to worktree (supports wt shortcuts: pr:N, ^, -)
     switch -c <branch>         Create worktree and connect
     -h, --help                 Show this help
 
@@ -34,8 +36,8 @@ Examples:
     worktree add feature-login
     worktree add feature-login --base develop
     worktree remove /path/to/worktree
-    worktree list | xargs -I{} git -C {} status
     worktree switch feature-login
+    worktree switch pr:123
     worktree switch -c feature-login
 EOF
 }
@@ -45,25 +47,7 @@ check_git_repo() {
 }
 
 get_repo_root() {
-	git worktree list | head -1 | awk '{print $1}'
-}
-
-prune_worktrees() {
-	local repo_root
-	repo_root=$(get_repo_root)
-	local output
-	output=$(git -C "$repo_root" worktree prune -v 2>&1)
-	if [[ -n "$output" ]]; then
-		echo "$output"
-	else
-		echo "Nothing to prune"
-	fi
-}
-
-cleanup_after_remove() {
-	git worktree prune >/dev/null 2>&1 || true
-	git delete-squashed >/dev/null 2>&1 || true
-	tmux-clean >/dev/null 2>&1 || true
+	wt list --format json | jq -r 'first(.[] | select(.is_main)) | .path'
 }
 
 add_worktree() {
@@ -75,62 +59,26 @@ add_worktree() {
 		return 1
 	fi
 
-	# Validate branch name (no spaces or special chars except - _ /)
-	if [[ ! "$branch_name" =~ ^[a-zA-Z0-9/_-]+$ ]]; then
-		echo "Error: Invalid branch name '$branch_name' (use alphanumeric, -, _, /)"
-		return 1
+	local args=(switch --no-cd)
+	if ! git rev-parse --verify "$branch_name" >/dev/null 2>&1; then
+		args+=(--create)
+		[[ -n "$base_branch" ]] && args+=(--base "$base_branch")
 	fi
+	args+=("$branch_name")
 
-	local repo_root
-	repo_root=$(get_repo_root)
-	local repo_name
-	repo_name=$(basename "$repo_root")
-	local worktree_path="$(dirname "$repo_root")/$repo_name.$branch_name"
-
-	if [[ -d "$worktree_path" ]]; then
-		echo "Error: Worktree already exists at $worktree_path"
-		return 1
-	fi
-
-	local output
-	# Try to create worktree with new branch first
-	if [[ -n "$base_branch" ]]; then
-		if output=$(git worktree add -b "$branch_name" "$worktree_path" "$base_branch" 2>&1); then
-			echo "Created worktree '$branch_name' at $worktree_path (from $base_branch)"
-			return 0
-		fi
-	else
-		if output=$(git worktree add -b "$branch_name" "$worktree_path" 2>&1); then
-			echo "Created worktree '$branch_name' at $worktree_path"
-			return 0
-		fi
-	fi
-
-	# If branch exists, try using existing branch
-	if output=$(git worktree add "$worktree_path" "$branch_name" 2>&1); then
-		echo "Created worktree for existing branch '$branch_name' at $worktree_path"
-		return 0
-	fi
-
-	# Show actual error
-	echo "Error: Failed to create worktree '$branch_name'"
-	echo "$output" | head -3
-	return 1
+	wt "${args[@]}"
 }
 
 remove_worktree() {
-	local worktree_path="$1"
-	local force="${2:-}"
+	local worktree_path force
+	worktree_path="$(echo "${1:-}" | xargs)"
+	force="${2:-}"
 
 	if [[ -z "$worktree_path" ]]; then
 		echo "Error: Worktree path cannot be empty"
 		return 1
 	fi
 
-	local repo_root
-	repo_root=$(get_repo_root)
-
-	# Warn if worktree has uncommitted changes and not forcing
 	if [[ "$force" != "--force" ]] && [[ -d "$worktree_path" ]]; then
 		local dirty
 		dirty=$(git -C "$worktree_path" status --porcelain 2>/dev/null || true)
@@ -140,90 +88,57 @@ remove_worktree() {
 		fi
 	fi
 
-	local output
-	if output=$(git -C "$repo_root" worktree remove -f "$worktree_path" 2>&1); then
-		echo "Removed worktree: $worktree_path"
-		cleanup_after_remove
+	local target
+	target=$(git -C "$worktree_path" branch --show-current 2>/dev/null || echo "")
+	[[ -z "$target" ]] && target="$worktree_path"
+
+	local args=(remove --foreground -y)
+	[[ "$force" == "--force" ]] && args+=(-f -D)
+	args+=("$target")
+
+	if wt "${args[@]}" 2>/dev/null; then
+		tmux-clean >/dev/null 2>&1 || true
 		return 0
 	fi
 
-	echo "Error: Failed to remove worktree '$worktree_path'"
-	echo "$output" | head -3
+	echo "Error: Failed to remove worktree '$target'"
 	return 1
 }
 
 list_worktrees() {
-	git worktree list --porcelain | awk '/^worktree / {print $2}'
-}
+	local json
+	json=$(wt -C "$(get_repo_root)" list --format json)
 
-list_worktrees_with_status() {
-	local repo_root
-	repo_root=$(get_repo_root)
-
-	local -a paths hashes branches
-	local wt_path="" wt_hash="" wt_branch=""
-	while IFS= read -r line; do
-		case "$line" in
-		worktree\ *) wt_path="${line#worktree }" ;;
-		HEAD\ *)     wt_hash="${line#HEAD }"; wt_hash="${wt_hash:0:7}" ;;
-		branch\ *)   wt_branch="${line#branch refs/heads/}" ;;
-		'')
-			[[ -n "$wt_path" ]] && paths+=("$wt_path") && hashes+=("$wt_hash") && branches+=("$wt_branch")
-			wt_path="" wt_hash="" wt_branch=""
-			;;
-		esac
-	done < <(git -C "$repo_root" worktree list --porcelain)
-	[[ -n "$wt_path" ]] && paths+=("$wt_path") && hashes+=("$wt_hash") && branches+=("$wt_branch")
-
-	local max_len=0
-	for p in "${paths[@]}"; do
-		[[ ${#p} -gt $max_len ]] && max_len=${#p}
-	done
-
-	local tmpdir
-	tmpdir=$(mktemp -d)
-
-	for i in "${!paths[@]}"; do
-		(
-			local wt_path="${paths[$i]}" hash="${hashes[$i]}" branch="${branches[$i]}" indicators=""
-
-			local dirty
-			dirty=$(git -C "$wt_path" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
-			[[ "$dirty" -gt 0 ]] && indicators+="\033[31m*\033[0m"
-
-			if [[ -n "$branch" ]]; then
-				local ref default_branch ahead behind
-				ref=$(git -C "$wt_path" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null) \
-					&& default_branch="${ref##refs/remotes/origin/}" || default_branch="main"
-				ahead=$(git -C "$wt_path" rev-list --count "origin/$default_branch..$branch" 2>/dev/null || echo 0)
-				behind=$(git -C "$wt_path" rev-list --count "$branch..origin/$default_branch" 2>/dev/null || echo 0)
-				[[ "$ahead" -gt 0 ]] && indicators+="\033[33m↑${ahead}\033[0m"
-				[[ "$behind" -gt 0 ]] && indicators+="\033[36m↓${behind}\033[0m"
-			fi
-
-			printf "%-${max_len}s\t\033[33m%s\033[0m  \033[32m[%s]\033[0m %b\n" \
-				"$wt_path" "$hash" "${branch:-detached}" "$indicators"
-		) >"$tmpdir/$i" &
-	done
-	wait
-
-	for i in "${!paths[@]}"; do cat "$tmpdir/$i"; done
-	rm -rf "$tmpdir"
+	if [[ "${1:-}" == "--status" ]]; then
+		local esc=$'\033'
+		echo "$json" | jq -r \
+			--arg red "${esc}[31m" \
+			--arg yel "${esc}[33m" \
+			--arg cyn "${esc}[36m" \
+			--arg grn "${esc}[32m" \
+			--arg rst "${esc}[0m" '
+			(map(.path | length) | max) as $max |
+			.[] |
+			([$max - (.path | length), 0] | max) as $pad |
+			(.working_tree | if (.staged or .modified or .untracked or .deleted or .renamed) then "\($red)*\($rst)" else "" end) as $dirty |
+			(.remote.ahead  // 0 | if . > 0 then "\($yel)↑\(.)\($rst)" else "" end) as $ahead |
+			(.remote.behind // 0 | if . > 0 then "\($cyn)↓\(.)\($rst)" else "" end) as $behind |
+			"\(.path)\(" " * $pad)\t\($yel)\(.commit.short_sha)\($rst)  \($grn)[\(.branch // "detached")]\($rst) \($dirty)\($ahead)\($behind)"
+		'
+	else
+		echo "$json" | jq -r '.[].path'
+	fi
 }
 
 switch_worktree() {
 	local create=0
 	local branch_name=""
+	local base_branch=""
 	while [[ $# -gt 0 ]]; do
 		case "$1" in
-		-c)
-			create=1
-			shift
-			;;
-		*)
-			branch_name="$1"
-			shift
-			;;
+		-c) create=1; shift ;;
+		--base) base_branch="${2:-}"; shift 2 ;;
+		*) branch_name="$1"; shift ;;
 		esac
 	done
 
@@ -232,20 +147,12 @@ switch_worktree() {
 		return 1
 	fi
 
-	if [[ "$create" -eq 1 ]]; then
-		add_worktree "$branch_name" || return 1
-	fi
+	local args=(switch --no-cd -x "sesh connect {{ worktree_path }}")
+	[[ "$create" -eq 1 ]] && args+=(--create)
+	[[ -n "$base_branch" ]] && args+=(--base "$base_branch")
+	args+=("$branch_name")
 
-	local match
-	match=$(git worktree list --porcelain |
-		awk '/^worktree / {path=$2} /^branch refs\/heads\// {branch=$2; sub("refs/heads/","",branch); if (branch=="'"$branch_name"'") print path}')
-
-	if [[ -z "$match" ]]; then
-		echo "Error: No worktree for branch '$branch_name'"
-		return 1
-	fi
-
-	sesh connect "$match"
+	wt "${args[@]}"
 }
 
 interactive_mode() {
@@ -257,23 +164,21 @@ interactive_mode() {
 	repo_root=$(get_repo_root)
 
 	local selected
-	selected=$(worktree list-status | fzf \
+	selected=$(worktree -C "$repo_root" list --status | fzf \
 		--ansi \
 		--delimiter $'\t' \
 		--border-label '🌴 Worktrees ' \
-		--header 'CTRL-X (remove) : CTRL-A (add) : CTRL-G (prune) : ENTER (connect)' \
-		--bind "ctrl-x:execute-silent(worktree remove {1} --force 2>/dev/null || true)+reload(worktree list-status)" \
-		--bind "ctrl-a:transform:[[ -n {q} ]] && echo 'reload(worktree add {q} --base main >/dev/null; worktree list-status)' || echo 'bell'" \
-		--bind "ctrl-g:execute-silent(worktree prune >/dev/null)+reload(worktree list-status)" \
+		--header 'CTRL-X (remove) : CTRL-A (add) : ENTER (connect)' \
+		--bind "ctrl-x:execute-silent(worktree -C '$repo_root' remove {1} --force 2>/dev/null || true)+reload(worktree -C '$repo_root' list --status)" \
+		--bind "ctrl-a:transform:[[ -n {q} ]] && echo 'reload(worktree -C \"$repo_root\" add {q} --base main >/dev/null; worktree -C \"$repo_root\" list --status)' || echo 'bell'" \
 		--preview "$(
 			cat <<'PREVIEW'
-			path={1}
+			path=$(echo {1} | xargs)
 			echo -e '\033[1;36m📍 Worktree:\033[0m '"$path"
 			echo
 
-			# Show branch with ahead/behind info
 			branch=$(git -C "$path" branch --show-current 2>/dev/null)
-			ref=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null) && default="${ref##refs/remotes/origin/}" || default="main"
+			ref=$(git -C "$path" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null) && default="${ref##refs/remotes/origin/}" || default="main"
 			if [[ -n "$branch" ]]; then
 				ahead=$(git -C "$path" rev-list --count "origin/$default..$branch" 2>/dev/null || echo 0)
 				behind=$(git -C "$path" rev-list --count "$branch..origin/$default" 2>/dev/null || echo 0)
@@ -283,7 +188,6 @@ interactive_mode() {
 				echo -e "\033[1;32m🌿 Branch:\033[0m $branch ${status:+\033[1;33m[$status]\033[0m}"
 			fi
 
-			# Dirty indicator
 			if [[ -n $(git -C "$path" status --porcelain 2>/dev/null) ]]; then
 				echo -e '\033[1;31m⚠  Uncommitted changes\033[0m'
 			fi
@@ -300,71 +204,45 @@ PREVIEW
 
 	if [[ -n "$selected" ]]; then
 		local worktree_path
-		worktree_path=$(echo "$selected" | awk '{print $1}')
+		worktree_path=$(echo "$selected" | cut -f1 | xargs)
 		sesh connect "$worktree_path"
 	fi
 }
 
 main() {
+	if [[ "${1:-}" == "-C" ]]; then
+		cd "${2:?}" 2>/dev/null || true
+		shift 2
+	fi
+
 	case "${1:-}" in
 	-h | --help)
 		usage
 		exit 0
 		;;
 	add)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
+		check_git_repo || { echo "Error: Not a git repository"; exit 1; }
 		local branch_name="${2:-}"
 		local base_branch=""
 		shift 2 2>/dev/null || shift $# 2>/dev/null || true
 		while [[ $# -gt 0 ]]; do
 			case "$1" in
-			--base)
-				base_branch="${2:-}"
-				shift 2
-				;;
-			*)
-				shift
-				;;
+			--base) base_branch="${2:-}"; shift 2 ;;
+			*) shift ;;
 			esac
 		done
 		add_worktree "$branch_name" "$base_branch"
 		;;
 	remove)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
+		check_git_repo || { echo "Error: Not a git repository"; exit 1; }
 		remove_worktree "${2:-}" "${3:-}"
 		;;
-	prune)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
-		prune_worktrees
-		;;
 	list)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
-		list_worktrees
-		;;
-	list-status)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
-		list_worktrees_with_status
+		check_git_repo || { echo "Error: Not a git repository"; exit 1; }
+		list_worktrees "${2:-}"
 		;;
 	switch)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
+		check_git_repo || { echo "Error: Not a git repository"; exit 1; }
 		shift
 		switch_worktree "$@"
 		;;
