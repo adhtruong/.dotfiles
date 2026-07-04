@@ -56,5 +56,6 @@
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true
   },
-  "editorMode": "vim"
+  "editorMode": "vim",
+  "tui": "fullscreen"
 }
