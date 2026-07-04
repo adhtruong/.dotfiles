@@ -124,11 +124,11 @@ FZF_CTRL_R_COMMAND='' FZF_ALT_C_COMMAND='' source <(fzf --zsh)
 source ${ZSHRC_DIR}/atuin-fzf-integration.zsh
 
 export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
-export FZF_DEFAULT_OPTS="--height=80% --tmux 80% --ansi --border --layout=reverse --border --margin=1 --padding=1 \
+export FZF_DEFAULT_OPTS="--height=80% --popup 80% --ansi --border --layout=reverse --margin=1 --padding=1 \
     --bind 'ctrl-b:preview-page-up' \
     --bind 'ctrl-d:preview-page-down' \
     --bind 'ctrl-f:preview-page-down' \
-    --bind 'ctrl-y:execute(readlink -f {} | pbcopy)'"
+    --bind 'ctrl-y:execute-silent(readlink -f {} | pbcopy)+abort'"
 
 export FZF_CTRL_T_COMMAND="fd --strip-cwd-prefix --hidden --follow --exclude .git"
 export FZF_CTRL_T_OPTS="\
@@ -138,7 +138,7 @@ export FZF_CTRL_T_OPTS="\
   --header 'CTRL-D (zoxide) | CTRL-F (files) | CTRL-V (open) | CTRL-Y (copy)' \
   --preview 'fzf-preview {}' \
   --bind 'ctrl-/:change-preview-window(down|hidden|)' \
-  --bind 'ctrl-y:execute(readlink -f {} | pbcopy)' \
+  --bind 'ctrl-y:execute-silent(readlink -f {} | pbcopy)+abort' \
   --bind 'ctrl-d:change-prompt(📁  )+reload(zoxide query -l)' \
   --bind 'ctrl-f:change-prompt(📄  )+reload($FZF_CTRL_T_COMMAND)' \
   --bind 'ctrl-v:become:nvim {+} > /dev/tty'"
