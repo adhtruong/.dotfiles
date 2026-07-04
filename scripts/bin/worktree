@@ -44,6 +44,17 @@ check_git_repo() {
 	git rev-parse --git-dir >/dev/null 2>&1
 }
 
+require_git_repo() {
+	check_git_repo || { echo "Error: Not a git repository"; exit 1; }
+}
+
+connect_worktree() {
+	local target_path="$1"
+	local current_path
+	current_path=$(tmux display-message -p '#{session_path}' 2>/dev/null || true)
+	if [[ "$target_path" != "$current_path" ]]; then sesh connect "$target_path"; fi
+}
+
 get_repo_root() {
 	git worktree list | head -1 | awk '{print $1}'
 }
@@ -61,8 +72,9 @@ prune_worktrees() {
 }
 
 cleanup_after_remove() {
-	git worktree prune >/dev/null 2>&1 || true
-	git delete-squashed >/dev/null 2>&1 || true
+	local repo_root="$1"
+	git -C "$repo_root" worktree prune >/dev/null 2>&1 || true
+	git -C "$repo_root" delete-squashed >/dev/null 2>&1 || true
 	tmux-clean >/dev/null 2>&1 || true
 }
 
@@ -143,7 +155,7 @@ remove_worktree() {
 	local output
 	if output=$(git -C "$repo_root" worktree remove -f "$worktree_path" 2>&1); then
 		echo "Removed worktree: $worktree_path"
-		cleanup_after_remove
+		cleanup_after_remove "$repo_root"
 		return 0
 	fi
 
@@ -187,9 +199,10 @@ list_worktrees_with_status() {
 		(
 			local wt_path="${paths[$i]}" hash="${hashes[$i]}" branch="${branches[$i]}" indicators=""
 
-			local dirty
-			dirty=$(git -C "$wt_path" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
-			[[ "$dirty" -gt 0 ]] && indicators+="\033[31m*\033[0m"
+			# --untracked-files=no skips the slow untracked-file scan
+			if ! git -C "$wt_path" diff --quiet HEAD 2>/dev/null; then
+				indicators+="\033[31m*\033[0m"
+			fi
 
 			if [[ -n "$branch" ]]; then
 				local ref default_branch ahead behind
@@ -245,7 +258,7 @@ switch_worktree() {
 		return 1
 	fi
 
-	sesh connect "$match"
+	connect_worktree "$match"
 }
 
 interactive_mode() {
@@ -262,9 +275,9 @@ interactive_mode() {
 		--delimiter $'\t' \
 		--border-label '🌴 Worktrees ' \
 		--header 'CTRL-X (remove) : CTRL-A (add) : CTRL-G (prune) : ENTER (connect)' \
-		--bind "ctrl-x:execute-silent(worktree remove {1} --force 2>/dev/null || true)+reload(worktree list-status)" \
-		--bind "ctrl-a:transform:[[ -n {q} ]] && echo 'reload(worktree add {q} --base main >/dev/null; worktree list-status)' || echo 'bell'" \
-		--bind "ctrl-g:execute-silent(worktree prune >/dev/null)+reload(worktree list-status)" \
+		--bind "ctrl-x:execute-silent(worktree remove {1} --force 2>/dev/null || true)+reload(cd '$repo_root' && worktree list-status)" \
+		--bind "ctrl-a:transform:[[ -n {q} ]] && echo 'reload(worktree add {q} --base main >/dev/null; cd $repo_root && worktree list-status)' || echo 'bell'" \
+		--bind "ctrl-g:execute-silent(worktree prune >/dev/null)+reload(cd '$repo_root' && worktree list-status)" \
 		--preview "$(
 			cat <<'PREVIEW'
 			path={1}
@@ -301,7 +314,7 @@ PREVIEW
 	if [[ -n "$selected" ]]; then
 		local worktree_path
 		worktree_path=$(echo "$selected" | awk '{print $1}')
-		sesh connect "$worktree_path"
+		connect_worktree "$worktree_path"
 	fi
 }
 
@@ -312,10 +325,7 @@ main() {
 		exit 0
 		;;
 	add)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
+		require_git_repo
 		local branch_name="${2:-}"
 		local base_branch=""
 		shift 2 2>/dev/null || shift $# 2>/dev/null || true
@@ -333,38 +343,23 @@ main() {
 		add_worktree "$branch_name" "$base_branch"
 		;;
 	remove)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
+		require_git_repo
 		remove_worktree "${2:-}" "${3:-}"
 		;;
 	prune)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
+		require_git_repo
 		prune_worktrees
 		;;
 	list)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
+		require_git_repo
 		list_worktrees
 		;;
 	list-status)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
+		require_git_repo
 		list_worktrees_with_status
 		;;
 	switch)
-		check_git_repo || {
-			echo "Error: Not a git repository"
-			exit 1
-		}
+		require_git_repo
 		shift
 		switch_worktree "$@"
 		;;
