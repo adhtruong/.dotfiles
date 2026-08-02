@@ -59,6 +59,16 @@ get_repo_root() {
 	git worktree list | head -1 | awk '{print $1}'
 }
 
+get_default_branch() {
+	local repo_root="$1"
+	local ref
+	if ref=$(git -C "$repo_root" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null); then
+		echo "${ref##refs/remotes/origin/}"
+	else
+		echo "main"
+	fi
+}
+
 prune_worktrees() {
 	local repo_root
 	repo_root=$(get_repo_root)
@@ -72,10 +82,33 @@ prune_worktrees() {
 }
 
 cleanup_after_remove() {
-	local repo_root="$1"
+	local repo_root="$1" branch="$2"
 	git -C "$repo_root" worktree prune >/dev/null 2>&1 || true
-	git -C "$repo_root" delete-squashed >/dev/null 2>&1 || true
+	[[ -n "$branch" ]] && delete_if_merged "$repo_root" "$branch"
 	tmux-clean >/dev/null 2>&1 || true
+}
+
+# Delete branch if merged (directly or via squash) into the default branch.
+# Uses merge-base/cherry instead of `git checkout` so it never touches
+# repo_root's currently checked-out branch: https://github.com/not-an-aardvark/git-delete-squashed
+delete_if_merged() {
+	local repo_root="$1" branch="$2"
+	local default_branch
+	default_branch=$(get_default_branch "$repo_root")
+	[[ "$branch" == "$default_branch" ]] && return 0
+
+	if git -C "$repo_root" branch --merged "$default_branch" | sed 's/^[* ] //' | grep -qx "$branch"; then
+		git -C "$repo_root" branch -d "$branch" >/dev/null 2>&1
+		return 0
+	fi
+
+	local merge_base tree commit cherry
+	merge_base=$(git -C "$repo_root" merge-base "$default_branch" "$branch" 2>/dev/null) || return 0
+	tree=$(git -C "$repo_root" rev-parse "$branch^{tree}" 2>/dev/null) || return 0
+	commit=$(git -C "$repo_root" commit-tree "$tree" -p "$merge_base" -m _ 2>/dev/null) || return 0
+	cherry=$(git -C "$repo_root" cherry "$default_branch" "$commit" 2>/dev/null)
+	[[ "$cherry" == -* ]] && git -C "$repo_root" branch -D "$branch" >/dev/null 2>&1
+	return 0
 }
 
 add_worktree() {
@@ -87,9 +120,9 @@ add_worktree() {
 		return 1
 	fi
 
-	# Validate branch name (no spaces or special chars except - _ /)
-	if [[ ! "$branch_name" =~ ^[a-zA-Z0-9/_-]+$ ]]; then
-		echo "Error: Invalid branch name '$branch_name' (use alphanumeric, -, _, /)"
+	# Validate branch name (no spaces or special chars except - _ . /)
+	if [[ ! "$branch_name" =~ ^[a-zA-Z0-9/_.-]+$ ]]; then
+		echo "Error: Invalid branch name '$branch_name' (use alphanumeric, -, _, ., /)"
 		return 1
 	fi
 
@@ -152,16 +185,54 @@ remove_worktree() {
 		fi
 	fi
 
+	local branch=""
+	[[ -d "$worktree_path" ]] && branch=$(git -C "$worktree_path" branch --show-current 2>/dev/null || true)
+
 	local output
 	if output=$(git -C "$repo_root" worktree remove -f "$worktree_path" 2>&1); then
 		echo "Removed worktree: $worktree_path"
-		cleanup_after_remove "$repo_root"
+		cleanup_after_remove "$repo_root" "$branch"
 		return 0
 	fi
 
 	echo "Error: Failed to remove worktree '$worktree_path'"
 	echo "$output" | head -3
 	return 1
+}
+
+remove_worktree_confirm() {
+	local worktree_path="$1"
+	if [[ -z "$worktree_path" ]]; then
+		echo "Error: Worktree path cannot be empty"
+		return 1
+	fi
+
+	local branch=""
+	[[ -d "$worktree_path" ]] && branch=$(git -C "$worktree_path" branch --show-current 2>/dev/null || true)
+
+	local header="⚠  Force delete: $worktree_path"
+	[[ -n "$branch" ]] && header+=$'\n'"   Branch: $branch"
+	if [[ -d "$worktree_path" ]] && [[ -n "$(git -C "$worktree_path" status --porcelain 2>/dev/null)" ]]; then
+		header+=$'\n'"   Uncommitted changes will be discarded"
+	fi
+
+	local choice
+	choice=$(printf 'No\nYes\n' | fzf \
+		--disabled \
+		--layout=reverse \
+		--height=~40% \
+		--border=rounded \
+		--border-label ' Confirm ' \
+		--header "$header" \
+		--header-first \
+		--color 'header:red:bold')
+
+	if [[ "$choice" == "Yes" ]]; then
+		remove_worktree "$worktree_path" --force
+	else
+		echo "Cancelled"
+		return 1
+	fi
 }
 
 list_worktrees() {
@@ -205,9 +276,8 @@ list_worktrees_with_status() {
 			fi
 
 			if [[ -n "$branch" ]]; then
-				local ref default_branch ahead behind
-				ref=$(git -C "$wt_path" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null) \
-					&& default_branch="${ref##refs/remotes/origin/}" || default_branch="main"
+				local default_branch ahead behind
+				default_branch=$(get_default_branch "$wt_path")
 				ahead=$(git -C "$wt_path" rev-list --count "origin/$default_branch..$branch" 2>/dev/null || echo 0)
 				behind=$(git -C "$wt_path" rev-list --count "$branch..origin/$default_branch" 2>/dev/null || echo 0)
 				[[ "$ahead" -gt 0 ]] && indicators+="\033[33m↑${ahead}\033[0m"
@@ -251,7 +321,7 @@ switch_worktree() {
 
 	local match
 	match=$(git worktree list --porcelain |
-		awk '/^worktree / {path=$2} /^branch refs\/heads\// {branch=$2; sub("refs/heads/","",branch); if (branch=="'"$branch_name"'") print path}')
+		awk -v target="$branch_name" '/^worktree / {path=$2} /^branch refs\/heads\// {branch=$2; sub("refs/heads/","",branch); if (branch==target) print path}')
 
 	if [[ -z "$match" ]]; then
 		echo "Error: No worktree for branch '$branch_name'"
@@ -268,6 +338,8 @@ interactive_mode() {
 
 	local repo_root
 	repo_root=$(get_repo_root)
+	local default_branch
+	default_branch=$(get_default_branch "$repo_root")
 
 	local selected
 	selected=$(worktree list-status | fzf \
@@ -275,8 +347,8 @@ interactive_mode() {
 		--delimiter $'\t' \
 		--border-label '🌴 Worktrees ' \
 		--header 'CTRL-X (remove) : CTRL-A (add) : CTRL-G (prune) : ENTER (connect)' \
-		--bind "ctrl-x:execute-silent(worktree remove {1} --force 2>/dev/null || true)+reload(cd '$repo_root' && worktree list-status)" \
-		--bind "ctrl-a:transform:[[ -n {q} ]] && echo 'reload(worktree add {q} --base main >/dev/null; cd $repo_root && worktree list-status)' || echo 'bell'" \
+		--bind "ctrl-x:execute(worktree remove-confirm {1})+reload(cd '$repo_root' && worktree list-status)" \
+		--bind "ctrl-a:transform:[[ -n {q} ]] && echo 'reload(worktree add {q} --base $default_branch >/dev/null; cd $repo_root && worktree list-status)' || echo 'bell'" \
 		--bind "ctrl-g:execute-silent(worktree prune >/dev/null)+reload(cd '$repo_root' && worktree list-status)" \
 		--preview "$(
 			cat <<'PREVIEW'
@@ -286,7 +358,7 @@ interactive_mode() {
 
 			# Show branch with ahead/behind info
 			branch=$(git -C "$path" branch --show-current 2>/dev/null)
-			ref=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null) && default="${ref##refs/remotes/origin/}" || default="main"
+			ref=$(git -C "$path" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null) && default="${ref##refs/remotes/origin/}" || default="main"
 			if [[ -n "$branch" ]]; then
 				ahead=$(git -C "$path" rev-list --count "origin/$default..$branch" 2>/dev/null || echo 0)
 				behind=$(git -C "$path" rev-list --count "$branch..origin/$default" 2>/dev/null || echo 0)
@@ -345,6 +417,10 @@ main() {
 	remove)
 		require_git_repo
 		remove_worktree "${2:-}" "${3:-}"
+		;;
+	remove-confirm)
+		require_git_repo
+		remove_worktree_confirm "${2:-}"
 		;;
 	prune)
 		require_git_repo
