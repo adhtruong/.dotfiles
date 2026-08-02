@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Run by sleepwatcher (brew services start sleepwatcher) whenever the Mac
+# wakes from sleep. Karabiner's Core Service can fail to re-grab keyboards
+# (especially Bluetooth) after sleep/wake, so restart it defensively.
+
+uid=$(id -u)
+launchctl kickstart -k "gui/${uid}/org.pqrs.service.agent.Karabiner-Core-Service-rev2"
+launchctl kickstart -k "gui/${uid}/org.pqrs.service.agent.karabiner_console_user_server"
