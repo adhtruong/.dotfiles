@@ -242,6 +242,8 @@ list_worktrees() {
 list_worktrees_with_status() {
 	local repo_root
 	repo_root=$(get_repo_root)
+	local default_branch
+	default_branch=$(get_default_branch "$repo_root")
 
 	local -a paths hashes branches
 	local wt_path="" wt_hash="" wt_branch=""
@@ -266,20 +268,23 @@ list_worktrees_with_status() {
 	local tmpdir
 	tmpdir=$(mktemp -d)
 
+	# Cap concurrent git invocations so a large worktree count doesn't fork-storm the system.
+	local max_parallel=12
+	local n=0
+
 	for i in "${!paths[@]}"; do
 		(
 			local wt_path="${paths[$i]}" hash="${hashes[$i]}" branch="${branches[$i]}" indicators=""
 
-			# --untracked-files=no skips the slow untracked-file scan
 			if ! git -C "$wt_path" diff --quiet HEAD 2>/dev/null; then
 				indicators+="\033[31m*\033[0m"
 			fi
 
 			if [[ -n "$branch" ]]; then
-				local default_branch ahead behind
-				default_branch=$(get_default_branch "$wt_path")
-				ahead=$(git -C "$wt_path" rev-list --count "origin/$default_branch..$branch" 2>/dev/null || echo 0)
-				behind=$(git -C "$wt_path" rev-list --count "$branch..origin/$default_branch" 2>/dev/null || echo 0)
+				local counts ahead behind
+				counts=$(git -C "$wt_path" rev-list --left-right --count "$branch...origin/$default_branch" 2>/dev/null || echo $'0\t0')
+				ahead="${counts%%$'\t'*}"
+				behind="${counts##*$'\t'}"
 				[[ "$ahead" -gt 0 ]] && indicators+="\033[33m↑${ahead}\033[0m"
 				[[ "$behind" -gt 0 ]] && indicators+="\033[36m↓${behind}\033[0m"
 			fi
@@ -287,6 +292,10 @@ list_worktrees_with_status() {
 			printf "%-${max_len}s\t\033[33m%s\033[0m  \033[32m[%s]\033[0m %b\n" \
 				"$wt_path" "$hash" "${branch:-detached}" "$indicators"
 		) >"$tmpdir/$i" &
+
+		if (( ++n % max_parallel == 0 )); then
+			wait
+		fi
 	done
 	wait
 
