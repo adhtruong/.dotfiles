@@ -9,15 +9,17 @@ if [[ -z "$output" || "$output" == "No agents" ]]; then
 	exit 0
 fi
 
-formatted="$(printf '%s\n' "$output" | column -t -s $'\t' 2>/dev/null || true)"
-printf '%s\n' "$formatted" |
+printf '%s\n' "$output" |
 	fzf \
 		--ansi \
 		--no-sort \
-		--border-label ' 🤖 agents ' \
-		--header 'ENTER connect · ^x kill pane' \
-		--with-nth '1..5' \
-		--preview 'tmux capture-pane -e -p -t {6} 2>/dev/null || sesh preview {3}' \
+		--delimiter $'\t' \
+		--tabstop 1 \
+		--border-label '🤖 Agents ' \
+		--prompt '🤖  ' \
+		--header '^x kill pane' \
+		--with-nth '1..7' \
+		--preview 'tmux capture-pane -e -p -t {8} 2>/dev/null || sesh preview {4}' \
 		--preview-window 'right:50%' \
-		--bind 'enter:become(agent-state connect-pane {3} {6})' \
-		--bind 'ctrl-x:execute(tmux kill-pane -t {6}; agent-state prune)' || true
+		--bind 'enter:become(agent-state connect-pane {4} {8})' \
+		--bind 'ctrl-x:execute(tmux kill-pane -t {8}; agent-state prune)' || true

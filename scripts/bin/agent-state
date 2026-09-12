@@ -35,12 +35,28 @@ MARKERS: dict[AgentState, str] = {
     "needs_prompt": "💬",
 }
 
+MARKER_COLORS: dict[AgentState, str] = {
+    "working": "\033[36m",  # cyan
+    "finished": "\033[32m",  # green
+    "needs_prompt": "\033[33m",  # yellow
+}
+RESET = "\033[0m"
+
 PRIORITY: dict[AgentState, int] = {
     "needs_prompt": 0,
     "working": 1,
     "finished": 2,
 }
 
+# Process name (as reported by `ps -o comm`) each --agent actually runs as.
+# Hooks can be skipped on a non-graceful exit (crash, kill -9, dropped
+# connection), which would otherwise leave a stale entry pointing at a pane
+# that's alive but no longer running the agent. Falls back to the agent name
+# itself if not listed here.
+AGENT_PROCESS_NAMES: dict[str, str] = {
+    "claude": "claude",
+    "cursor": "cursor-agent",
+}
 
 _xdg = os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share"))
 STATE_FILE = Path(_xdg) / "agent" / "state.json"
@@ -76,6 +92,10 @@ def pane_path(pane: str) -> str:
 
 def pane_branch(path: str) -> str:
     return sh("git", "-C", path, "branch", "--show-current") if path else ""
+
+
+def pane_title(pane: str) -> str:
+    return sh("tmux", "display-message", "-t", pane, "-p", "#{pane_title}").replace("\t", " ")
 
 
 def pane_session(pane: str) -> str:
@@ -127,10 +147,66 @@ def cmd_clear(agent: str = "") -> None:
     save(state)
 
 
+def pane_pids() -> dict[str, str]:
+    """Map pane_id -> pane_pid, for currently alive panes."""
+    lines = sh("tmux", "list-panes", "-a", "-F", "#{pane_id} #{pane_pid}").splitlines()
+    return dict(line.split(" ", 1) for line in lines if " " in line)
+
+
+def process_children() -> dict[str, list[str]]:
+    """Map pid -> child pids, from the system process table."""
+    children: dict[str, list[str]] = {}
+    for line in sh("ps", "-Ao", "pid,ppid").splitlines()[1:]:
+        parts = line.split()
+        if len(parts) == 2:
+            children.setdefault(parts[1], []).append(parts[0])
+    return children
+
+
+def process_names() -> dict[str, str]:
+    """Map pid -> comm, from the system process table."""
+    names: dict[str, str] = {}
+    for line in sh("ps", "-Ao", "pid,comm").splitlines()[1:]:
+        parts = line.split(None, 1)
+        if len(parts) == 2:
+            names[parts[0]] = parts[1].rsplit("/", 1)[-1]
+    return names
+
+
+def agent_running(
+    root_pid: str, agent: str, children: dict[str, list[str]], names: dict[str, str]
+) -> bool:
+    """Check whether a process matching `agent` is running under root_pid."""
+    target = AGENT_PROCESS_NAMES.get(agent, agent)
+    stack, seen = [root_pid], set()
+    while stack:
+        pid = stack.pop()
+        if pid in seen:
+            continue
+        seen.add(pid)
+        if names.get(pid) == target:
+            return True
+        stack.extend(children.get(pid, []))
+    return False
+
+
 def cmd_prune() -> None:
-    alive = set(sh("tmux", "list-panes", "-a", "-F", "#{pane_id}").splitlines())
+    pids = pane_pids()
+    children = process_children()
+    names = process_names()
+
+    def keep(entry: Entry) -> bool:
+        root = pids.get(entry.get("tmux_pane", ""))
+        if root is None:
+            return False
+        agent = entry.get("agent", "")
+        return not agent or agent_running(root, agent, children, names)
+
     state = load()
-    save({k: v for k, v in state.items() if k.split(":")[0] in alive})
+    save({k: v for k, v in state.items() if keep(v)})
+
+
+CURRENT_PANE_ICON = "*"
 
 
 def cmd_list() -> None:
@@ -139,31 +215,48 @@ def cmd_list() -> None:
     if not state:
         print("No agents", file=sys.stderr)
         return
+    current_pane = os.environ.get("TMUX_PANE", "")
     entries = sorted(state.values(), key=lambda e: PRIORITY.get(e["state"], 99))
+    rows = []
     for e in entries:
         pane = e.get("tmux_pane", "")
         path = pane_path(pane)
-        print(
-            "\t".join([
-                MARKERS.get(e["state"], "?"),
-                pane_branch(path),
-                e.get("tmux_session") or pane_session(pane),
-                age_str(e.get("set_at", time.time())),
-                e.get("agent", ""),
-                pane,
-            ])
-        )
+        rows.append([
+            CURRENT_PANE_ICON if pane == current_pane else "",
+            MARKERS.get(e["state"], "?"),
+            pane_branch(path),
+            e.get("tmux_session") or pane_session(pane),
+            age_str(e.get("set_at", time.time())),
+            e.get("agent", ""),
+            pane_title(pane),
+            pane,
+        ])
+    # Pad the fixed-form columns for display; title/pane are left as-is since
+    # title is free text and must stay last-visible so fzf's tab-delimited
+    # field indexing (used by agent-view) doesn't shift.
+    GAPS = [1, 2, 2, 2, 2, 2]  # indicator column gets a tighter gap
+    widths = [max(len(r[i]) for r in rows) for i in range(6)] if rows else []
+    for e, r in zip(entries, rows):
+        padded = [r[i].ljust(widths[i] + GAPS[i]) for i in range(6)]
+        color = MARKER_COLORS.get(e["state"], "")
+        padded[1] = f"{color}{padded[1]}{RESET}" if color else padded[1]
+        print("\t".join([*padded, r[6], r[7]]))
 
 
 def cmd_debug() -> None:
     state = load()
-    for entry in state.values():
+    debug_state: dict[str, dict[str, object]] = {}
+    for key, entry in state.items():
         pane = entry.get("tmux_pane", "")
         path = pane_path(pane)
-        entry["_path"] = path  # type: ignore[typeddict-unknown-key]
-        entry["_branch"] = pane_branch(path)  # type: ignore[typeddict-unknown-key]
-        entry["_repo"] = sh("git", "-C", path, "remote", "get-url", "origin") if path else ""  # type: ignore[typeddict-unknown-key]
-    print(json.dumps({"config": {"state_file": str(STATE_FILE)}, "state": state}, indent=2))
+        debug_state[key] = {
+            **entry,
+            "_path": path,
+            "_branch": pane_branch(path),
+            "_repo": sh("git", "-C", path, "remote", "get-url", "origin") if path else "",
+            "_title": pane_title(pane),
+        }
+    print(json.dumps({"config": {"state_file": str(STATE_FILE)}, "state": debug_state}, indent=2))
 
 
 def cmd_connect_pane(session: str, pane: str) -> None:
@@ -205,8 +298,8 @@ def prune() -> None:
     cmd_prune()
 
 
-@app.command()
-def list() -> None:
+@app.command(name="list")
+def list_agents() -> None:
     cmd_list()
 
 
