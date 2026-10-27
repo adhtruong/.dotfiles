@@ -7,6 +7,7 @@
 #   worktree add <branch> --base <b> # Add worktree from specific base branch
 #   worktree remove <path>           # Remove worktree
 #   worktree prune                   # Prune stale worktree entries
+#   worktree gc [--dry-run|--yes]    # Remove merged, clean, agent-free worktrees
 #   worktree list                    # List worktrees (for scripting)
 #   worktree switch <branch>         # Connect to existing worktree by branch name
 #   worktree switch -c <branch>      # Create worktree and connect
@@ -24,7 +25,9 @@ Commands:
     remove <path>              Remove worktree at path (fails if dirty)
     remove <path> --force      Remove worktree discarding uncommitted changes
     prune                      Prune stale worktree admin entries
-    list                       List worktrees (paths only, for scripting)
+    gc [--dry-run] [--yes]     Remove clean worktrees whose branch is merged or
+       [--no-fetch]            deleted upstream and has no agent running in it
+    list                    List worktrees (paths only, for scripting)
     switch <branch>            Connect to existing worktree by branch name
     switch -c <branch>         Create worktree and connect
     -h, --help                 Show this help
@@ -88,27 +91,231 @@ cleanup_after_remove() {
 	tmux-clean >/dev/null 2>&1 || true
 }
 
-# Delete branch if merged (directly or via squash) into the default branch.
+# Print how branch landed in base: "merged" (branch is an ancestor of base),
+# "squashed" (an equivalent single patch is in base), or nothing.
 # Uses merge-base/cherry instead of `git checkout` so it never touches
 # repo_root's currently checked-out branch: https://github.com/not-an-aardvark/git-delete-squashed
+merge_state() {
+	local repo_root="$1" base="$2" branch="$3"
+	if git -C "$repo_root" merge-base --is-ancestor "$branch" "$base" 2>/dev/null; then
+		echo "merged"
+		return 0
+	fi
+
+	local merge_base tree commit cherry
+	merge_base=$(git -C "$repo_root" merge-base "$base" "$branch" 2>/dev/null) || return 0
+	tree=$(git -C "$repo_root" rev-parse "$branch^{tree}" 2>/dev/null) || return 0
+	commit=$(git -C "$repo_root" commit-tree "$tree" -p "$merge_base" -m _ 2>/dev/null) || return 0
+	cherry=$(git -C "$repo_root" cherry "$base" "$commit" 2>/dev/null)
+	[[ "$cherry" == -* ]] && echo "squashed"
+	return 0
+}
+
+# Delete branch if merged (directly or via squash) into the default branch.
 delete_if_merged() {
 	local repo_root="$1" branch="$2"
 	local default_branch
 	default_branch=$(get_default_branch "$repo_root")
 	[[ "$branch" == "$default_branch" ]] && return 0
 
-	if git -C "$repo_root" branch --merged "$default_branch" | sed 's/^[* ] //' | grep -qx "$branch"; then
-		git -C "$repo_root" branch -d "$branch" >/dev/null 2>&1
+	case "$(merge_state "$repo_root" "$default_branch" "$branch")" in
+	merged) git -C "$repo_root" branch -d "$branch" >/dev/null 2>&1 || true ;;
+	squashed) git -C "$repo_root" branch -D "$branch" >/dev/null 2>&1 || true ;;
+	esac
+	return 0
+}
+
+# Print #{pane_current_path} for every tmux pane with an agent process running
+# beneath it. Process names mirror AGENT_PROCESS_NAMES in agent-state.
+agent_pane_paths() {
+	command -v tmux >/dev/null || return 0
+	awk '
+		FILENAME == ARGV[1] {
+			p = index($0, " ")
+			if (p) path[substr($0, 1, p - 1)] = substr($0, p + 1)
+			next
+		}
+		{
+			parent[$1] = $2
+			comm = $0
+			sub(/^ *[0-9]+ +[0-9]+ +/, "", comm)
+			sub(/.*\//, "", comm)
+			if (comm == "claude" || comm == "cursor-agent") agents[$1] = 1
+		}
+		END {
+			for (a in agents) {
+				pid = a
+				for (depth = 0; depth < 64 && pid + 0 > 1; depth++) {
+					if (pid in path) { print path[pid]; break }
+					pid = parent[pid]
+				}
+			}
+		}
+	' <(tmux list-panes -a -F '#{pane_pid} #{pane_current_path}' 2>/dev/null) <(ps -Ao pid=,ppid=,comm=)
+}
+
+# Remove worktrees whose work has landed: clean, no agent running in them, and
+# branch merged/squash-merged into origin's default branch or deleted upstream.
+# Branches are only deleted when merged; upstream-deleted unmerged ones are kept.
+gc_worktrees() {
+	local dry_run=0 assume_yes=0 fetch=1
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		-n | --dry-run) dry_run=1 ;;
+		-y | --yes) assume_yes=1 ;;
+		--no-fetch) fetch=0 ;;
+		*)
+			echo "Error: Unknown gc option '$1'"
+			return 1
+			;;
+		esac
+		shift
+	done
+
+	local repo_root default_branch base
+	repo_root=$(get_repo_root)
+	default_branch=$(get_default_branch "$repo_root")
+
+	if [[ "$fetch" -eq 1 ]] && git -C "$repo_root" remote get-url origin >/dev/null 2>&1; then
+		git -C "$repo_root" fetch --prune --quiet origin 2>/dev/null ||
+			echo "Warning: fetch failed, using local refs" >&2
+	fi
+	base="$default_branch"
+	if git -C "$repo_root" rev-parse --verify --quiet "refs/remotes/origin/$default_branch" >/dev/null; then
+		base="origin/$default_branch"
+	fi
+
+	local gone agent_paths here
+	gone=$(git -C "$repo_root" for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads |
+		awk '$2 == "[gone]" {print $1}')
+	agent_paths=$(agent_pane_paths)
+	here=$(pwd -P)
+
+	local -a paths branches flags
+	local wt_path="" wt_branch="" wt_flags=""
+	while IFS= read -r line; do
+		case "$line" in
+		worktree\ *) wt_path="${line#worktree }" ;;
+		branch\ *) wt_branch="${line#branch refs/heads/}" ;;
+		locked* | prunable*) wt_flags+=" ${line%% *}" ;;
+		'')
+			[[ -n "$wt_path" ]] && paths+=("$wt_path") && branches+=("$wt_branch") && flags+=("$wt_flags")
+			wt_path="" wt_branch="" wt_flags=""
+			;;
+		esac
+	done < <(git -C "$repo_root" worktree list --porcelain; echo)
+
+	local -a cand_paths cand_branches cand_reasons cand_delete skipped
+	local i p b reason skip state a in_use
+	for i in "${!paths[@]}"; do
+		p="${paths[$i]}" b="${branches[$i]}" reason="" skip=""
+		[[ "$p" == "$repo_root" ]] && continue
+
+		in_use=0
+		while IFS= read -r a; do
+			[[ -n "$a" && ("$a" == "$p" || "$a" == "$p/"*) ]] && in_use=1
+		done <<<"$agent_paths"
+
+		if [[ -z "$b" ]]; then
+			skip="detached HEAD"
+		elif [[ "$b" == "$default_branch" ]]; then
+			skip="default branch"
+		elif [[ "${flags[$i]}" == *locked* ]]; then
+			skip="locked"
+		elif [[ "${flags[$i]}" == *prunable* ]]; then
+			skip="directory missing (worktree prune)"
+		elif [[ "$here/" == "$p/"* ]]; then
+			skip="current directory"
+		elif [[ "$in_use" -eq 1 ]]; then
+			skip="agent running"
+		elif [[ -n "$(git -C "$p" status --porcelain 2>/dev/null)" ]]; then
+			skip="uncommitted changes"
+		else
+			state=$(merge_state "$repo_root" "$base" "$b")
+			if [[ "$state" == "merged" ]] &&
+				[[ "$(git -C "$repo_root" reflog show --format=%H "refs/heads/$b" 2>/dev/null | wc -l)" -le 1 ]]; then
+				# An untouched new branch is trivially an ancestor of base.
+				skip="no commits yet"
+			elif [[ -n "$state" ]]; then
+				reason="$state into $base"
+			elif [[ $'\n'"$gone"$'\n' == *$'\n'"$b"$'\n'* ]]; then
+				reason="upstream deleted, not merged (branch kept)"
+				state=""
+			else
+				skip="not merged"
+			fi
+		fi
+
+		if [[ -n "$reason" ]]; then
+			cand_paths+=("$p") cand_branches+=("$b") cand_reasons+=("$reason") cand_delete+=("$state")
+		else
+			skipped+=("$p"$'\t'"[${b:-detached}]"$'\t'"$skip")
+		fi
+	done
+
+	local -a rows
+	for i in "${!cand_paths[@]}"; do
+		rows+=("$i"$'\t'"${cand_paths[$i]}"$'\t'"[${cand_branches[$i]}]"$'\t'"${cand_reasons[$i]}")
+	done
+
+	if [[ "$dry_run" -eq 1 ]]; then
+		echo "Would remove:"
+		[[ ${#rows[@]} -eq 0 ]] && echo "  (none)"
+		for i in "${!rows[@]}"; do printf '  %s\n' "${rows[$i]#*$'\t'}"; done
+		if [[ ${#skipped[@]} -gt 0 ]]; then
+			echo "Keeping:"
+			for i in "${!skipped[@]}"; do printf '  %s\n' "${skipped[$i]}"; done
+		fi
 		return 0
 	fi
 
-	local merge_base tree commit cherry
-	merge_base=$(git -C "$repo_root" merge-base "$default_branch" "$branch" 2>/dev/null) || return 0
-	tree=$(git -C "$repo_root" rev-parse "$branch^{tree}" 2>/dev/null) || return 0
-	commit=$(git -C "$repo_root" commit-tree "$tree" -p "$merge_base" -m _ 2>/dev/null) || return 0
-	cherry=$(git -C "$repo_root" cherry "$default_branch" "$commit" 2>/dev/null)
-	[[ "$cherry" == -* ]] && git -C "$repo_root" branch -D "$branch" >/dev/null 2>&1
-	return 0
+	if [[ ${#rows[@]} -eq 0 ]]; then
+		echo "Nothing to clean up"
+		return 0
+	fi
+
+	local selected
+	if [[ "$assume_yes" -eq 1 ]]; then
+		selected=$(printf '%s\n' "${rows[@]}")
+	elif [[ -t 0 ]]; then
+		selected=$(printf '%s\n' "${rows[@]}" | column -t -s $'\t' | fzf \
+			--multi \
+			--bind 'load:select-all' \
+			--layout=reverse \
+			--height=~60% \
+			--border=rounded \
+			--border-label ' 🧹 Worktree GC ' \
+			--header 'TAB toggle : ENTER remove selected : ESC cancel' \
+			--header-first \
+			--with-nth '2..') || {
+			echo "Cancelled"
+			return 1
+		}
+	else
+		echo "Error: not interactive; pass --yes to remove, or --dry-run to preview"
+		return 1
+	fi
+
+	local removed=0 idx
+	while read -r idx _; do
+		[[ -z "$idx" ]] && continue
+		p="${cand_paths[$idx]}" b="${cand_branches[$idx]}"
+		# No -f: refuse if the worktree picked up changes since it was checked.
+		if ! git -C "$repo_root" worktree remove "$p" 2>/dev/null; then
+			echo "Error: Failed to remove $p (changed since check?)"
+			continue
+		fi
+		removed=$((removed + 1))
+		if [[ -n "${cand_delete[$idx]}" ]] && git -C "$repo_root" branch -D "$b" >/dev/null 2>&1; then
+			echo "Removed $p (deleted branch $b)"
+		else
+			echo "Removed $p (kept branch $b)"
+		fi
+	done <<<"$selected"
+
+	git -C "$repo_root" worktree prune >/dev/null 2>&1 || true
+	[[ "$removed" -gt 0 ]] && { tmux-clean >/dev/null 2>&1 || true; }
+	echo "Removed $removed worktree(s)"
 }
 
 add_worktree() {
@@ -434,6 +641,11 @@ main() {
 	prune)
 		require_git_repo
 		prune_worktrees
+		;;
+	gc)
+		require_git_repo
+		shift
+		gc_worktrees "$@"
 		;;
 	list)
 		require_git_repo
