@@ -68,9 +68,15 @@ const applicationManipulators = [
 
 const finderLayer = [
   map("j").to({ key_code: "tab", modifiers: ["right_command"] }),
-  map("k").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+  map("k").to({
+    key_code: "tab",
+    modifiers: ["right_command", "left_shift"],
+  }),
 
-  map("h").to({ key_code: "left_shift", modifiers: ["right_command"] }),
+  map("h").to({
+    key_code: "grave_accent_and_tilde",
+    modifiers: ["right_command", "left_shift"],
+  }),
   map("l").to({
     key_code: "grave_accent_and_tilde",
     modifiers: ["right_command"],
